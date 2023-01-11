@@ -12,4 +12,30 @@ public interface Ports {
         int OPERATOR = 1;
         int DEBUGGER = 2;
     }
+    
+    public interface Swerve {
+        public interface FrontRight {
+            int DRIVE = -1;
+            int TURN = -1;
+            int ENCODER = -1;
+        }
+
+        public interface FrontLeft  {
+            int DRIVE = -1;
+            int TURN = -1;
+            int ENCODER = -1;
+        }
+
+        public interface BackLeft {
+            int DRIVE = -1;
+            int TURN = -1;
+            int ENCODER = -1;
+        }
+        
+        public interface BackRight {
+            int DRIVE = -1;
+            int TURN = -1;
+            int ENCODER = -1;
+        }
+    }
 }
