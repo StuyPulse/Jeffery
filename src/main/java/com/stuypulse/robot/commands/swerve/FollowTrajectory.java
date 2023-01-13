@@ -45,26 +45,27 @@ public class FollowTrajectory extends PPSwerveControllerCommand {
 		return this;
 	}
 
-	public FollowPathWithEvents withEvents(Map<String, Command> events) {
-		return new FollowPathWithEvents(
-			this,
-			path.getMarkers(),
-			new HashMap<String, Command>(events)
-		);
-	}
+	// public FollowPathWithEvents withEvents(Map<String, Command> events) {
+	// 	return new FollowPathWithEvents(
+	// 		this,
+	// 		path.getMarkers(),
+	// 		new HashMap<String, Command>(events)
+	// 	);
+	// }
 
-	public FollowPathWithEvents withEvents(HashMap<String, Command> events) {
-		return new FollowPathWithEvents(
-			this,
-			path.getMarkers(),
-			events
-		);
-	}
+	// public FollowPathWithEvents withEvents(HashMap<String, Command> events) {
+	// 	return new FollowPathWithEvents(
+	// 		this,
+	// 		path.getMarkers(),
+	// 		events
+	// 	);
+	// }
 
 	@Override
 	public void initialize() {
 		if (robotRelative) {
 			swerve.reset(path.getInitialHolonomicPose());
+			System.out.println(path.getInitialHolonomicPose());
 		}
 
 		super.initialize();
