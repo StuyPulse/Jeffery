@@ -11,9 +11,7 @@ import com.stuypulse.stuylib.control.angle.feedback.AnglePIDController;
 import com.stuypulse.stuylib.control.feedback.PIDController;
 import com.stuypulse.stuylib.math.Angle;
 import com.stuypulse.stuylib.math.SLMath;
-import com.stuypulse.stuylib.network.SmartBoolean;
 import com.stuypulse.stuylib.network.SmartNumber;
-import com.stuypulse.stuylib.streams.IStream;
 import com.stuypulse.stuylib.streams.filters.IFilterGroup;
 import com.stuypulse.stuylib.streams.filters.LowPassFilter;
 
@@ -80,6 +78,9 @@ public interface Settings {
         // Width of the robot
         double TRACK_WIDTH = Units.inchesToMeters(27);
 
+        double MAX_VELOCITY = Units.feetToMeters(12.0); // 12 ft/s
+        double MAX_ACCELERATION = 3.0;
+
         interface Motion {
 
             DifferentialDriveKinematics KINEMATICS = new DifferentialDriveKinematics(TRACK_WIDTH);
@@ -109,7 +110,6 @@ public interface Settings {
 
         // Encoder Constants
         public interface Encoders {
-
             double WHEEL_DIAMETER = Units.inchesToMeters(6);
             double WHEEL_CIRCUMFERENCE = WHEEL_DIAMETER * Math.PI;
 
@@ -133,21 +133,11 @@ public interface Settings {
         Translation2d HUB = new Translation2d(Units.feetToMeters(12.8), 0);
     }
 
-    public static void reportWarning(String string) {
-    }
-
     public interface Alignment {
-        IStream RING_DISTANCE = new SmartNumber("Limelight/Ring Distance",
-                50).filtered(Units::inchesToMeters);
-        IStream PAD_DISTANCE = new SmartNumber("Limelight/Pad Distance", 217).filtered(Units::inchesToMeters);
-
-        IStream APRIL_TAG_DISTANCE = new SmartNumber("Limelight/April Tag Distance", 100)
-                .filtered(Units::inchesToMeters);
-
-        double MIN_DISTANCE = Units.feetToMeters(1);
-        double MAX_DISTANCE = Units.feetToMeters(54);
 
         double MIN_ALIGNMENT_TIME = 1.0;
+
+        double TIMEOUT = 15;
 
         SmartNumber SPEED_ADJ_FILTER = new SmartNumber("Drivetrain/Alignment/Speed Adj RC", 0.1);
         SmartNumber FUSION_FILTER = new SmartNumber("Drivetrain/Alignment/Fusion RC", 0.3);
@@ -191,7 +181,6 @@ public interface Settings {
             SmartNumber I = new SmartNumber("Drivetrain/Alignment/Angle/I", 0);
             SmartNumber D = new SmartNumber("Drivetrain/Alignment/Angle/D", 0.0023);
 
-            // Get PID Controller
             public static AngleController getPID() {
                 return new AnglePIDController(P, I, D)
                         .setOutputFilter(new IFilterGroup(SLMath::clamp, new LowPassFilter(OUT_SMOOTH_FILTER)));
@@ -207,32 +196,6 @@ public interface Settings {
             // What is an acceptable error
             double MAX_ANGLE_ERROR = 3;
             double MAX_ANGLE_VEL = 20.0;
-        }
-
-        public interface Measurements {
-
-            SmartNumber APRIL_TAG_16H52_2 = new SmartNumber("April Tag 2 Height", Units.inchesToMeters(88));
-            SmartNumber APRIL_TAG_16H52_1 = new SmartNumber("April Tag 1 Height", Units.inchesToMeters(85.75));
-
-            public interface Limelight {
-                double HEIGHT = Units.feetToMeters(2) + Units.inchesToMeters(10);
-                double DISTANCE = Units.feetToMeters(0);
-                double PITCH = Units.degreesToRadians(23);
-                double YAW = 0.0;
-
-                // What angle error should make us start distance alignment
-                SmartNumber MAX_ANGLE_FOR_MOVEMENT = new SmartNumber("Limelight/Max Angle For Distance", 3.0);
-
-                SmartNumber MAX_ANGLE_ERROR = new SmartNumber("Limelight/Max Angle Error", 2);
-                SmartNumber MAX_DISTANCE_ERROR = new SmartNumber("Limelight/Max Distance Error",
-                        Units.inchesToMeters(6));
-
-                SmartNumber MAX_VELOCITY = // THERE WAS AN ERROR WHERE THIS WOULD'NT CHECK WHEN MOVING BACKWARDS
-                        new SmartNumber("Limelight/Max Velocity Error", Units.inchesToMeters(3));
-
-                // How long it takes to stop aligning
-                double DEBOUNCE_TIME = 0.2;
-            }
         }
     }
 }

@@ -4,22 +4,25 @@
 
 package com.stuypulse.robot.commands.drivetrain;
 
+import com.pathplanner.lib.PathConstraints;
+import com.pathplanner.lib.PathPlanner;
+import com.pathplanner.lib.PathPlannerTrajectory;
+import com.pathplanner.lib.commands.PPRamseteCommand;
+import com.stuypulse.robot.constants.Settings;
 import com.stuypulse.robot.constants.Settings.Drivetrain.Motion;
 import com.stuypulse.robot.subsystems.Drivetrain;
-import com.stuypulse.robot.util.TrajectoryLoader;
 
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.math.controller.RamseteController;
 import edu.wpi.first.math.trajectory.Trajectory;
-import edu.wpi.first.wpilibj2.command.RamseteCommand;
 
-public class DrivetrainRamseteCommand extends RamseteCommand {
+public class DrivetrainRamseteCommand extends PPRamseteCommand {
 
     private boolean resetPosition;
     private Trajectory trajectory;
     private Drivetrain drivetrain;
 
-    public DrivetrainRamseteCommand(Drivetrain drivetrain, Trajectory trajectory) {
+    public DrivetrainRamseteCommand(Drivetrain drivetrain, PathPlannerTrajectory trajectory) {
         super(
                 trajectory,
                 drivetrain::getPose,
@@ -38,12 +41,12 @@ public class DrivetrainRamseteCommand extends RamseteCommand {
     }
 
     public DrivetrainRamseteCommand(Drivetrain drivetrain, String path) {
-        this(drivetrain, TrajectoryLoader.getTrajectory(path));
+        this(drivetrain, PathPlanner.loadPath(path, new PathConstraints(Settings.Drivetrain.MAX_VELOCITY, Settings.Drivetrain.MAX_ACCELERATION)));
     }
 
-    public DrivetrainRamseteCommand(Drivetrain drivetrain, String... paths) {
-        this(drivetrain, TrajectoryLoader.getTrajectory(paths));
-    }
+    // public DrivetrainRamseteCommand(Drivetrain drivetrain, String... paths) {
+    //     this(drivetrain, PathPlanner.loadPathGroup(, null, null)));
+    // }
 
     // [DEFAULT] Resets the drivetrain to the begining of the trajectory
     public DrivetrainRamseteCommand robotRelative() {

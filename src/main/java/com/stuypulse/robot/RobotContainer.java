@@ -64,7 +64,7 @@ public class RobotContainer {
                         () -> drivetrain.setPose(new Pose2d(3.302, 0, new Rotation2d())),
                         drivetrain));
 
-        driver.getBottomButton().whileTrue(new DrivetrainAlignCommand(drivetrain, camera));
+        driver.getBottomButton().whileTrue(new DrivetrainAlignCommand(drivetrain, camera, new Pose2d()));
     }
 
     /**************/
