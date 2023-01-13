@@ -176,9 +176,9 @@ public class SwerveDrive extends SubsystemBase {
             }
 
             // setStatesRetainAngle(speeds);
-            setStates(speeds);
+            setStates(speeds, true);
         } else {
-            setStates(new ChassisSpeeds(velocity.y, -velocity.x, -omega));
+            setStates(new ChassisSpeeds(velocity.y, -velocity.x, -omega), false);
         }
     }
 
@@ -202,7 +202,10 @@ public class SwerveDrive extends SubsystemBase {
         setStates(velocity, omega, true);
     }
 
-    public void setStates(ChassisSpeeds robotSpeed) {
+    public void setStates(ChassisSpeeds robotSpeed, Boolean fieldRelative) {
+        if (fieldRelative){
+            robotSpeed = ChassisSpeeds.fromFieldRelativeSpeeds(robotSpeed, getAngle());
+        }
         setStates(kinematics.toSwerveModuleStates(robotSpeed));
     }
 
