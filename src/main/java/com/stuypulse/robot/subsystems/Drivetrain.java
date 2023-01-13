@@ -16,12 +16,14 @@ import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
+import edu.wpi.first.math.kinematics.DifferentialDriveWheelSpeeds;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.PneumaticsModuleType;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.Solenoid;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.drive.DifferentialDrive;
+import edu.wpi.first.wpilibj.motorcontrol.MotorController;
 import edu.wpi.first.wpilibj.motorcontrol.MotorControllerGroup;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -212,7 +214,7 @@ public class Drivetrain extends SubsystemBase {
 
     public void stop() {
         drivetrain.stopMotor();
-        driveVolts(0, 0);
+        tankDriveVolts(0, 0);
     }
 
     public void tankDrive(double leftMetersPerSecond, double rightMetersPerSecond) {
@@ -223,14 +225,21 @@ public class Drivetrain extends SubsystemBase {
         drivetrain.arcadeDrive(speed, angle);
     }
 
-    private void driveVolts(double leftVolts, double rightVolts) {
-        for (CANSparkMax motor : left) {
+
+    public void tankDriveVolts(double leftVolts, double rightVolts) {
+        for (MotorController motor : left) {
             motor.setVoltage(leftVolts);
         }
 
-        for (CANSparkMax motor : right) {
+        for (MotorController motor : right) {
             motor.setVoltage(rightVolts);
         }
+
+        drivetrain.feed();
+    }
+
+    public DifferentialDriveWheelSpeeds getWheelSpeeds() {
+        return new DifferentialDriveWheelSpeeds(getLeftVelocity(), getRightVelocity());
     }
 
     /***************

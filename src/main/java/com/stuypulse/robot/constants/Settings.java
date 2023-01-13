@@ -24,6 +24,9 @@ import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.util.Units;
 
+import java.nio.file.Path;
+import edu.wpi.first.wpilibj.Filesystem;
+
 /*-
  * File containing tunable settings for every subsystem on the robot.
  *
@@ -31,6 +34,8 @@ import edu.wpi.first.math.util.Units;
  * values that we can edit on Shuffleboard.
  */
 public interface Settings {
+
+    Path DEPLOY_DIRECTORY = Filesystem.getDeployDirectory().toPath();
 
     public interface Driver {
         // If speed is below this, use quick turn

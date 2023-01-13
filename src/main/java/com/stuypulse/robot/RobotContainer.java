@@ -6,7 +6,7 @@
 package com.stuypulse.robot;
 
 import com.stuypulse.robot.commands.auton.DoNothingAuton;
-import com.stuypulse.robot.commands.drivetrain.DriveCommand;
+import com.stuypulse.robot.commands.drivetrain.DrivetrainDriveCommand;
 import com.stuypulse.robot.commands.drivetrain.DrivetrainAlignCommand;
 import com.stuypulse.robot.constants.Ports;
 import com.stuypulse.robot.subsystems.Drivetrain;
@@ -50,7 +50,7 @@ public class RobotContainer {
     /****************/
 
     private void configureDefaultCommands() {
-        drivetrain.setDefaultCommand(new DriveCommand(drivetrain, driver));
+        drivetrain.setDefaultCommand(new DrivetrainDriveCommand(drivetrain, driver));
     }
 
     /***************/

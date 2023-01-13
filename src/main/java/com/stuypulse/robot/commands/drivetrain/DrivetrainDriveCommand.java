@@ -9,13 +9,13 @@ import com.stuypulse.stuylib.streams.filters.LowPassFilter;
 
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
-public class DriveCommand extends CommandBase {
+public class DrivetrainDriveCommand extends CommandBase {
     private final Drivetrain drivetrain;
 
     private final IStream speed;
     private final IStream angle;
 
-    public DriveCommand(Drivetrain drivetrain, Gamepad gamepad) {
+    public DrivetrainDriveCommand(Drivetrain drivetrain, Gamepad gamepad) {
         this.drivetrain = drivetrain;
 
         this.speed = IStream.create(() -> gamepad.getRightTrigger() - gamepad.getLeftTrigger())
