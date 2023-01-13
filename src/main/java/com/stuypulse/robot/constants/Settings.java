@@ -128,9 +128,9 @@ public interface Settings {
         public interface Motion {
             PathConstraints CONSTRAINTS = new PathConstraints(3.5, 2);
 
-            PIDConstants XY = new PIDConstants(2, 0, 0.5);
-            PIDConstants THETA = new PIDConstants(1, 0, 0.2);
+            PIDConstants XY = new PIDConstants(1, 0, 0.1);
+            PIDConstants THETA = new PIDConstants(10, 0, 0.1);
 
-        }
+        }   
     }
 }
