@@ -1,5 +1,6 @@
 package com.stuypulse.robot.commands.swerve;
 
+import com.stuypulse.robot.constants.Field;
 import com.stuypulse.robot.subsystems.SwerveDrive;
 import com.stuypulse.stuylib.math.Vector2D;
 
@@ -20,7 +21,7 @@ public class GyroAutoEngage extends CommandBase {
 
     @Override
     public void execute() {
-        double target = Units.inchesToMeters(172.631);
+        double target = Units.inchesToMeters(Field.CHARGING_STATION_CENTER.getX());
 
         double translation = swerve.getTranslation().getX() - target;
         double velocity = translation * (swerve.getGyroPitch() / 15);

@@ -1,5 +1,6 @@
 package com.stuypulse.robot.commands.swerve;
 
+import com.stuypulse.robot.constants.Field;
 import com.stuypulse.robot.subsystems.SwerveDrive;
 import com.stuypulse.stuylib.control.Controller;
 import com.stuypulse.stuylib.control.feedback.PIDController;
@@ -28,7 +29,7 @@ public class SetpointAutoEngage extends CommandBase {
     public void execute() {
         
         // target Translation
-        double xTarget = Units.inchesToMeters(172.631);
+        double xTarget = Units.inchesToMeters(Field.CHARGING_STATION_CENTER.getX());
         
         // distance from robot to target
         double distance = new Translation2d(xTarget, 0).minus(swerve.getTranslation()).getNorm();
