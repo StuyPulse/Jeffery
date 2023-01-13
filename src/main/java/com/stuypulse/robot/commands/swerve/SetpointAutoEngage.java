@@ -20,7 +20,7 @@ public class SetpointAutoEngage extends CommandBase {
     public SetpointAutoEngage() {
         this.swerve = SwerveDrive.getInstance();
 
-        this.controller = new PIDController(0, 0, 0);
+        this.controller = new PIDController(1, 0, 0);
 
         addRequirements(swerve);
     }
@@ -29,24 +29,20 @@ public class SetpointAutoEngage extends CommandBase {
     public void execute() {
         
         // target Translation
-        double xTarget = Units.inchesToMeters(Field.CHARGING_STATION_CENTER.getX());
+        double target = Units.inchesToMeters(Field.CHARGING_STATION_CENTER.getX());
         
         // distance from robot to target
-        double distance = new Translation2d(xTarget, 0).minus(swerve.getTranslation()).getNorm();
-
-        // get translation of swerve
-        double translation = swerve.getTranslation().getX();
+        double distance = swerve.getTranslation().getX();
 
         // results in velocity 
-        translation /= distance * MathUtil.clamp(
-                // limits updated state of controller to within -0.5,0.5
-                controller.update(xTarget, distance), -0.5, +0.5);
+        double velocity = controller.update(target, distance);
 
-        ChassisSpeeds speeds = new ChassisSpeeds( 
+        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds( 
             // set variable speeds to velocities (linear=Vx, sideways=0, angular = 0)
-            translation,
+            velocity,
             0,
-            0
+            0,
+            swerve.getAngle()
         );
 
         swerve.setStates(speeds); // set swerve drive to the speeds you want
