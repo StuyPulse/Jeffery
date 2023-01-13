@@ -2,6 +2,8 @@ package com.stuypulse.robot.commands.swerve;
 
 import com.stuypulse.robot.constants.Field;
 import com.stuypulse.robot.subsystems.SwerveDrive;
+import com.stuypulse.robot.util.Pitch;
+import com.stuypulse.stuylib.input.Gamepad;
 import com.stuypulse.stuylib.math.Vector2D;
 
 import edu.wpi.first.math.MathUtil;
@@ -13,6 +15,8 @@ public class GyroAutoEngage extends CommandBase {
     
     private final SwerveDrive swerve;
 
+    private double distanceToTarget;
+
     public GyroAutoEngage() {
         this.swerve = SwerveDrive.getInstance();
 
@@ -23,8 +27,8 @@ public class GyroAutoEngage extends CommandBase {
     public void execute() {
         double target = Units.inchesToMeters(Field.CHARGING_STATION_CENTER.getX());
 
-        double translation = swerve.getTranslation().getX() - target;
-        double velocity = translation * (swerve.getGyroPitch() / 15);
+        distanceToTarget = target - swerve.getTranslation().getX();
+        double velocity = distanceToTarget * Pitch.calculate(swerve.getGyroPitch(), swerve.getGyroRoll(), swerve.getAngle().getDegrees());
 
         ChassisSpeeds speeds = new ChassisSpeeds(
             MathUtil.clamp(velocity, -0.5, +0.5),
@@ -37,7 +41,7 @@ public class GyroAutoEngage extends CommandBase {
 
     @Override 
     public boolean isFinished() {
-        return Math.abs(swerve.getGyroPitch()) < 2;
+        return distanceToTarget < 0.1;
     }
 
     @Override 
