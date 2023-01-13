@@ -65,7 +65,6 @@ public class FollowTrajectory extends PPSwerveControllerCommand {
 	public void initialize() {
 		if (robotRelative) {
 			swerve.reset(path.getInitialHolonomicPose());
-			System.out.println(path.getInitialHolonomicPose());
 		}
 
 		super.initialize();

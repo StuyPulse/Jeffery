@@ -125,15 +125,10 @@ public class SL_SwerveModule extends SwerveModule {
 
     @Override
     public void periodic() {
-        // if (targetState.speedMetersPerSecond > Units.inchesToMeters(4)) {
-            turnMotor.setVoltage(turnController.update(
-                    Angle.fromRotation2d(targetState.angle),
-                    Angle.fromRotation2d(getRotation2d())));
-            driveMotor.setVoltage(driveController.update(targetState.speedMetersPerSecond, getSpeed()));
-        // } else {
-        //     turnMotor.stopMotor();
-        //     driveMotor.stopMotor();
-        // }
+        turnMotor.setVoltage(turnController.update(
+                Angle.fromRotation2d(targetState.angle),
+                Angle.fromRotation2d(getRotation2d())));
+        driveMotor.setVoltage(driveController.update(targetState.speedMetersPerSecond, getSpeed()));
 
         SmartDashboard.putNumber(id + "/Target Angle", targetState.angle.getDegrees());
         SmartDashboard.putNumber(id + "/Angle", getRotation2d().getDegrees());
