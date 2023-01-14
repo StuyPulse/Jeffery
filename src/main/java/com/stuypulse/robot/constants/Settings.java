@@ -133,7 +133,6 @@ public interface Settings {
 
         Pose2d TARGET_POSE = new Pose2d(6, 3, new Rotation2d());
 
-
         double MIN_ALIGNMENT_TIME = 1.0;
 
         double TIMEOUT = 15;
