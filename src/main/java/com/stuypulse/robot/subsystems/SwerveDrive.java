@@ -178,9 +178,9 @@ public class SwerveDrive extends SubsystemBase {
             }
 
             // setStatesRetainAngle(speeds);
-            setStates(speeds);
+            setStates(speeds, false);
         } else {
-            setStates(new ChassisSpeeds(velocity.y, -velocity.x, -omega));
+            setStates(new ChassisSpeeds(velocity.y, -velocity.x, -omega), false);
         }
     }
 
@@ -204,7 +204,10 @@ public class SwerveDrive extends SubsystemBase {
         setStates(velocity, omega, true);
     }
 
-    public void setStates(ChassisSpeeds robotSpeed) {
+    public void setStates(ChassisSpeeds robotSpeed, Boolean fieldRelative) {
+        if (fieldRelative){
+            robotSpeed = ChassisSpeeds.fromFieldRelativeSpeeds(robotSpeed, getAngle());
+        }
         setStates(kinematics.toSwerveModuleStates(robotSpeed));
     }
 
@@ -268,6 +271,9 @@ public class SwerveDrive extends SubsystemBase {
         SmartDashboard.putNumber("Swerve/Pose Y", getPose().getTranslation().getY());
         SmartDashboard.putNumber("Swerve/Pose Angle", getAngle().getDegrees());
         SmartDashboard.putNumber("Swerve/Gyro Angle", gyro.getRotation2d().getDegrees());
+        SmartDashboard.putNumber("Swerve/Bottom Right Module Speed", getModule("Back Right").getState().speedMetersPerSecond);
+        SmartDashboard.putNumber("Swerve/Angle", getAngle().getRadians());
+
     }
 
     @Override

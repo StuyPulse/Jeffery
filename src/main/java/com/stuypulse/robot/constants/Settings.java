@@ -10,7 +10,6 @@ import com.pathplanner.lib.auto.PIDConstants;
 import com.stuypulse.stuylib.math.Angle;
 import com.stuypulse.stuylib.math.Vector2D;
 import com.stuypulse.stuylib.network.SmartAngle;
-import com.stuypulse.stuylib.network.SmartBoolean;
 import com.stuypulse.stuylib.network.SmartNumber;
 
 import edu.wpi.first.math.geometry.Translation2d;
@@ -130,6 +129,20 @@ public interface Settings {
 
             PIDConstants XY = new PIDConstants(1, 0, 0.1);
             PIDConstants THETA = new PIDConstants(10, 0, 0.1);
+        }
+    }
+
+    public interface AlignmentCommand{
+        
+        public interface Translation {
+            SmartNumber P = new SmartNumber("Alignment/Translation/kP", 2.5);
+            SmartNumber I = new SmartNumber("Alignment/Translation/kI", 0);
+            SmartNumber D = new SmartNumber("Alignment/Translation/kD", 0);
+        }
+        public interface Rotation {
+            SmartNumber P = new SmartNumber("Alignment/Rotation/kP", 1);
+            SmartNumber I = new SmartNumber("Alignment/Rotation/kI", 0);
+            SmartNumber D = new SmartNumber("Alignment/Rotation/kD", 0);
         }
     }
 }
