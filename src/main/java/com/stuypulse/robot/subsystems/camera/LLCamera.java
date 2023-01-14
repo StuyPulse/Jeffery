@@ -4,6 +4,7 @@ import com.stuypulse.robot.constants.Settings;
 import com.stuypulse.robot.subsystems.ICamera;
 import com.stuypulse.stuylib.math.Angle;
 import com.stuypulse.stuylib.network.limelight.Limelight;
+import com.stuypulse.stuylib.network.limelight.Limelight.Pipeline;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -23,6 +24,18 @@ public class LLCamera extends ICamera {
             PortForwarder.add(port, "limelight.local", port);
         }
         CameraServer.startAutomaticCapture();
+	}
+
+	public void useAprilTagAlignment() {
+		limelight.setPipeline(Pipeline.SETTING_0);
+	}
+
+	public void useReflectiveTapeAlignment() {
+		limelight.setPipeline(Pipeline.SETTING_1);
+	}
+
+	public double getPipeline() {
+		return limelight.getPipeline().getCodeValue();
 	}
 
 	public double getLatency() {
