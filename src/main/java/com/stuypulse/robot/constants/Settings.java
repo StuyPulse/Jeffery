@@ -22,5 +22,14 @@ public interface Settings {
         double MAXANGLE = -1;
         double MINANGLE = -1;
         double MASS = -1;
+
+        double MIDGOAL = -1;
+        double HIGHGOAL = -1;
+
+        public interface PID {
+            double kP = -1;
+            double kI = -1;
+            double kD = -1;
+        }
     }
 }
