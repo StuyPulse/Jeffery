@@ -176,7 +176,7 @@ public class SwerveDrive extends SubsystemBase {
             }
 
             // setStatesRetainAngle(speeds);
-            setStates(speeds, true);
+            setStates(speeds, false);
         } else {
             setStates(new ChassisSpeeds(velocity.y, -velocity.x, -omega), false);
         }

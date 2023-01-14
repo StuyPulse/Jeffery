@@ -9,6 +9,8 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
+import com.stuypulse.robot.constants.Settings.AlignmentCommand.*;
+
 
 public class AlignmentCommand extends CommandBase {
 
@@ -27,12 +29,16 @@ public class AlignmentCommand extends CommandBase {
         this.swerve = swerve;
         this.targetPose = targetPose;
         
-        xPID = new PIDController(.1, .1, .1).
-            setSetpointFilter(new MotionProfile(1, 3));
-        yPID = new PIDController(.1, .1, .1).
-            setSetpointFilter(new MotionProfile(1, 3));
-        anglePID = new PIDController(.1, 0.1, 0.1).
-            setSetpointFilter(new MotionProfile(1, 3));
+        // xPID = new PIDController(Translation.P, Translation.I, Translation.D).
+        //     setSetpointFilter(new MotionProfile(2, 3));
+        // yPID = new PIDController(Translation.P, Translation.I, Translation.D).
+        //     setSetpointFilter(new MotionProfile(2, 3));
+        // anglePID = new PIDController(Rotation.P, Rotation.I, Translation.D).
+        //     setSetpointFilter(new MotionProfile(2, 3));
+        
+        xPID = new PIDController(Translation.P, Translation.I, Translation.D);
+        yPID = new PIDController(Translation.P, Translation.I, Translation.D);
+        anglePID = new PIDController(Rotation.P, Rotation.I, Translation.D);
 
     } 
     
@@ -46,6 +52,16 @@ public class AlignmentCommand extends CommandBase {
             anglePID.update(targetPose.getRotation().getRadians(), currentPose.getRotation().getRadians())
         );
 
+        
+
+        if(Math.abs(xPID.getError()) < 5 ){
+            chassisSpeeds.vxMetersPerSecond = 0;
+        }   
+        if(Math.abs(yPID.getError()) < 5 ){
+            chassisSpeeds.vyMetersPerSecond =0;
+        } 
+
+        
         swerve.setStates(chassisSpeeds, true);
     }
 }
