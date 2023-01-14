@@ -133,13 +133,14 @@ public interface Settings {
     }
 
     public interface AlignmentCommand{
-        public interface Translation{
-            SmartNumber P = new SmartNumber("Alignment/Translation/kP", 0.25);
+        
+        public interface Translation {
+            SmartNumber P = new SmartNumber("Alignment/Translation/kP", 2.5);
             SmartNumber I = new SmartNumber("Alignment/Translation/kI", 0);
             SmartNumber D = new SmartNumber("Alignment/Translation/kD", 0);
         }
-        public interface Rotation{
-            SmartNumber P = new SmartNumber("Alignment/Rotation/kP", 0.25);
+        public interface Rotation {
+            SmartNumber P = new SmartNumber("Alignment/Rotation/kP", 1);
             SmartNumber I = new SmartNumber("Alignment/Rotation/kI", 0);
             SmartNumber D = new SmartNumber("Alignment/Rotation/kD", 0);
         }
