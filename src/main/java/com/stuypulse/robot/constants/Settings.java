@@ -31,15 +31,16 @@ public interface Settings {
     public interface Driver {
         SmartNumber DEADBAND = new SmartNumber("Driver Settings/Deadband", 0.05);
         SmartNumber MAX_TELEOP_SPEED = new SmartNumber("Driver Settings/Max Speed", 4.2);
+        SmartNumber MAX_TELEOP_ACCEL = new SmartNumber("Driver Settings/Max Accleration", 7);
         SmartNumber MAX_TELEOP_TURNING = new SmartNumber("Driver Settings/Max Turning", 6.1);
 
         public interface Drive {
-            SmartNumber RC = new SmartNumber("Driver Settings/Drive/RC", 0.02);
+            SmartNumber RC = new SmartNumber("Driver Settings/Drive/RC", 0.25);
             SmartNumber POWER = new SmartNumber("Driver Settings/Drive/Power", 2);
         }
 
         public interface Turn {
-            SmartNumber RC = new SmartNumber("Driver Settings/Turn/RC", 0.1);
+            SmartNumber RC = new SmartNumber("Driver Settings/Turn/RC", 0.15);
             SmartNumber POWER = new SmartNumber("Driver Settings/Turn/Power", 2);
         }
 
@@ -126,9 +127,8 @@ public interface Settings {
         public interface Motion {
             PathConstraints CONSTRAINTS = new PathConstraints(3.5, 2);
 
-            PIDConstants XY = new PIDConstants(2, 0, 0.5);
-            PIDConstants THETA = new PIDConstants(1, 0, 0.2);
-
+            PIDConstants XY = new PIDConstants(1, 0, 0.1);
+            PIDConstants THETA = new PIDConstants(10, 0, 0.1);
         }
     }
 
