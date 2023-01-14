@@ -5,15 +5,22 @@
 
 package com.stuypulse.robot;
 
+import com.pathplanner.lib.PathPlannerTrajectory;
 import com.stuypulse.robot.commands.auton.DoNothingAuton;
 import com.stuypulse.robot.commands.drivetrain.DrivetrainDriveCommand;
+import com.stuypulse.robot.commands.drivetrain.DrivetrainRamseteCommand;
 import com.stuypulse.robot.commands.drivetrain.DrivetrainAlignCommand;
 import com.stuypulse.robot.constants.Ports;
+import com.stuypulse.robot.constants.Settings;
+import com.stuypulse.robot.constants.Settings.Alignment;
 import com.stuypulse.robot.subsystems.Drivetrain;
 import com.stuypulse.robot.subsystems.ICamera;
+import com.stuypulse.robot.subsystems.camera.LLCamera;
 import com.stuypulse.robot.subsystems.camera.PVCamera;
+import com.stuypulse.robot.subsystems.camera.SimCamera;
 import com.stuypulse.stuylib.input.Gamepad;
 import com.stuypulse.stuylib.input.gamepads.AutoGamepad;
+import com.stuypulse.stuylib.input.gamepads.Xbox;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -30,9 +37,8 @@ public class RobotContainer {
     
     // Subsystem
 
-    
-    public final ICamera camera = new PVCamera();
-    public final Drivetrain drivetrain = new Drivetrain(camera);
+    public final Drivetrain drivetrain = new Drivetrain(null);
+    public final ICamera camera = ICamera.getInstance(drivetrain);
 
     // Autons
     private static SendableChooser<Command> autonChooser = new SendableChooser<>();
@@ -61,10 +67,14 @@ public class RobotContainer {
 
         driver.getLeftButton()
                 .onTrue(new InstantCommand(
-                        () -> drivetrain.setPose(new Pose2d(3.302, 0, new Rotation2d())),
-                        drivetrain));
+                        // () -> drivetrain.setPose(new Pose2d(5.68, -3.36, new Rotation2d(Math.toRadians(10)))),
+                        () -> drivetrain.setPose(Settings.STARTING_POSE))
+                        );
 
-        driver.getBottomButton().whileTrue(new DrivetrainAlignCommand(drivetrain, camera, new Pose2d()));
+        driver.getBottomButton().onTrue(new DrivetrainAlignCommand(drivetrain, camera, Alignment.TARGET_POSE));
+
+        // driver.getTopButton().onTrue(new Command(()))
+        // new Pose2d(5.68, -3.36, new Rotation2d(Math.toRadians(10)))
     }
 
     /**************/

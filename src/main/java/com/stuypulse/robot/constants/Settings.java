@@ -33,6 +33,8 @@ import edu.wpi.first.wpilibj.Filesystem;
  */
 public interface Settings {
 
+    Pose2d STARTING_POSE = new Pose2d(Units.inchesToMeters(130), Units.inchesToMeters(16) + 0.89, new Rotation2d(Math.toRadians(180)));
+
     Path DEPLOY_DIRECTORY = Filesystem.getDeployDirectory().toPath();
 
     public interface Driver {
@@ -134,6 +136,11 @@ public interface Settings {
     }
 
     public interface Alignment {
+
+        // Pose2d TARGET_POSE = new Pose2d(6, -3, new Rotation2d());
+
+        Pose2d TARGET_POSE = new Pose2d(6, 3, new Rotation2d());
+
 
         double MIN_ALIGNMENT_TIME = 1.0;
 

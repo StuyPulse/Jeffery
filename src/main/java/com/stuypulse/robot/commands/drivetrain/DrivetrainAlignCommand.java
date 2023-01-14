@@ -38,7 +38,7 @@ public class DrivetrainAlignCommand extends SequentialCommandGroup {
 
         Pose2d currentPosition = drivetrain.getPose();
         this.trajectory = PathPlanner.generatePath(
-            new PathConstraints(Settings.Drivetrain.MAX_VELOCITY, Settings.Drivetrain.MAX_ACCELERATION),
+            new PathConstraints(Settings.Drivetrain.MAX_VELOCITY/5, Settings.Drivetrain.MAX_ACCELERATION/3),
             new PathPoint(currentPosition.getTranslation(), currentPosition.getRotation()),
             new PathPoint(target.getTranslation(), target.getRotation())
         );

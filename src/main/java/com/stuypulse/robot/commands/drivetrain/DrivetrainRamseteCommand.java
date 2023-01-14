@@ -66,6 +66,8 @@ public class DrivetrainRamseteCommand extends PPRamseteCommand {
 
         drivetrain.setHighGear();
 
+        drivetrain.getField2d().getObject("vincent path").setTrajectory(trajectory);
+
         if (resetPosition) {
             drivetrain.reset(trajectory.getInitialPose());
         }

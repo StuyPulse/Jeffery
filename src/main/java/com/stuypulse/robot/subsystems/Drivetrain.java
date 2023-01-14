@@ -4,6 +4,8 @@ import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
+import com.stuypulse.robot.constants.Settings;
+
 import static com.stuypulse.robot.constants.Ports.Drivetrain.*;
 import static com.stuypulse.robot.constants.Settings.Drivetrain.*;
 
@@ -103,10 +105,12 @@ public class Drivetrain extends SubsystemBase {
 
         // odometry = new DifferentialDriveOdometry(getRotation2d(), 0, 0);
 
-        poseEstimator = new DifferentialDrivePoseEstimator(getKinematics(), getRotation2d(), 0, 0, getPose());
+        poseEstimator = new DifferentialDrivePoseEstimator(getKinematics(), getRotation2d(), 0, 0, 
+                                new Pose2d());
         poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.01, 0.1, Units.degreesToRadians(3)));
 
-        setPose(new Pose2d(3.302, 0, new Rotation2d()));
+        // setPose(new Pose2d(5.68, -3.36, new Rotation2d(Math.toRadians(10))));
+        setPose(Settings.STARTING_POSE);
 
         field = new Field2d();
         SmartDashboard.putData("Edwin/Field", field);
@@ -302,6 +306,10 @@ public class Drivetrain extends SubsystemBase {
 
     @Override
     public void periodic() {
+        if (camera == null) {
+            camera = ICamera.getInstance(this);
+        }
+
         // odometry.update(getRotation2d(), getLeftDistance(), getRightDistance());
         poseEstimator.update(getRotation2d(), getLeftDistance(), getRightDistance());
         field.setRobotPose(getPose());

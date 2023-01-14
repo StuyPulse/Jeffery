@@ -72,6 +72,9 @@ public class LLCamera extends ICamera {
 	}
 
 	public Pose3d getPose3d() {
+		if (limelight.getRobotPose() == null) {
+			return new Pose3d();
+		}
         return limelight.getRobotPose();
 	}
 
@@ -82,6 +85,14 @@ public class LLCamera extends ICamera {
 		}
 
 		SmartDashboard.putNumber("Camera/Distance", getDistance());
+		SmartDashboard.putNumber("Camera/Angle", getHorizontalOffset().toDegrees());
+
+		Pose2d pose = getPose2d();
+
+		SmartDashboard.putNumber("Camera/Pose X", pose.getX());
+		SmartDashboard.putNumber("Camera/Pose Y", pose.getY());
+		SmartDashboard.putNumber("Camera/Pose Rotation", pose.getRotation().getDegrees());
+			
 	}
 
 }

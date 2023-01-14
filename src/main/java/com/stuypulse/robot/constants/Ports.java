@@ -27,4 +27,9 @@ public interface Ports {
 
         int GEAR_SHIFT = 0;
     }
+
+    public interface Pneumatics {
+        int ANALOG_PRESSURE_SWITCH_PORT = 0;
+        double ANALOG_PRESSURE_SWITCH_VOLTAGE_SUPPLY = 5.0;
+    }
 }

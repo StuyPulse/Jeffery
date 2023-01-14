@@ -24,7 +24,7 @@ public interface Motors {
 
     public interface Drivetrain {
         CANSparkMaxConfig LEFT = new CANSparkMaxConfig(false, IdleMode.kBrake, 40, 0.0);
-        CANSparkMaxConfig RIGHT = new CANSparkMaxConfig(false, IdleMode.kBrake, 40, 0.0);
+        CANSparkMaxConfig RIGHT = new CANSparkMaxConfig(true, IdleMode.kBrake, 40, 0.0);
     }
 
     /** Classes to store all of the values a motor needs */
