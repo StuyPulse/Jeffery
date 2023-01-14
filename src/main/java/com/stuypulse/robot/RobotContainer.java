@@ -6,6 +6,7 @@
 package com.stuypulse.robot;
 
 import com.stuypulse.robot.commands.SwerveDriveToPose;
+import com.stuypulse.robot.commands.SwerveDriveToPoseMP;
 import com.stuypulse.robot.commands.auton.DoNothingAuton;
 import com.stuypulse.robot.commands.swerve.SwerveDriveDrive;
 import com.stuypulse.robot.commands.swerve.SwerveHome;
@@ -56,6 +57,7 @@ public class RobotContainer {
     private void configureButtonBindings() {
         driver.getTopButton().whileTrue(new SwerveDriveToPose(swerve, new Pose2d(8, 4, new Rotation2d(0.78539))));
         driver.getBottomButton().onTrue(new SwerveHome(swerve, new Pose2d(0, 4, new Rotation2d(0)) ));
+        driver.getLeftButton().whileTrue(new SwerveDriveToPoseMP(swerve, new Pose2d(8, 4, new Rotation2d(0.78539))));
     }
 
     /**************/
