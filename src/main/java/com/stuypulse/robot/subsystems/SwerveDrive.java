@@ -230,6 +230,14 @@ public class SwerveDrive extends SubsystemBase {
         return gyro.getRotation2d();
     }
 
+    public double getGyroPitch() {
+        return gyro.getPitch();
+    }
+
+    public double getGyroRoll() {
+        return gyro.getRoll();
+    }
+
     /** ODOMETRY API */
 
     private void updatePose() {
