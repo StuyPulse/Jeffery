@@ -1,87 +1,22 @@
 {
   "HALProvider": {
     "Other Devices": {
-      "SPARK MAX [1]": {
-        "header": {
-          "open": true
-        }
-      },
-      "Talon SRX[0]": {
-        "header": {
-          "open": true
-        }
-      },
-      "Talon SRX[0]/Analog In": {
-        "header": {
-          "open": true
-        }
-      },
-      "Talon SRX[0]/Fwd Limit": {
-        "header": {
-          "open": true
-        }
-      },
-      "Talon SRX[0]/Pulse Width Input": {
-        "header": {
-          "open": true
-        }
-      },
-      "Talon SRX[0]/Quad Encoder": {
-        "header": {
-          "open": true
-        }
-      },
-      "Talon SRX[0]/Rev Limit": {
-        "header": {
-          "open": true
-        }
-      },
-      "navX-Sensor[0]": {
-        "header": {
-          "open": true
-        }
+      "window": {
+        "visible": false
       }
     }
   },
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
-      "/LiveWindow/Camera": "Subsystem",
-      "/LiveWindow/Conveyor": "Subsystem",
-      "/LiveWindow/Intake": "Subsystem",
-      "/LiveWindow/Intake/Intake Mechanism2d": "Mechanism2d",
-      "/LiveWindow/Intake/SimIntake": "Subsystem",
-      "/LiveWindow/SL_SimModule": "Subsystem",
-      "/LiveWindow/Shooter": "Subsystem",
-      "/LiveWindow/SimClimber": "Subsystem",
-      "/LiveWindow/SimShooter": "Subsystem",
-      "/LiveWindow/Swerve": "Subsystem",
-      "/LiveWindow/SwerveDrive": "Subsystem",
-      "/LiveWindow/Ungrouped/DigitalInput[21]": "Digital Input",
-      "/LiveWindow/Ungrouped/DigitalInput[22]": "Digital Input",
-      "/LiveWindow/Ungrouped/DigitalInput[8]": "Digital Input",
-      "/LiveWindow/Ungrouped/DigitalInput[9]": "Digital Input",
+
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
-      "/LiveWindow/Ungrouped/Talon SRX [0]": "Motor Controller",
-      "/LiveWindow/Ungrouped/Talon SRX [20]": "Motor Controller",
-      "/LiveWindow/Ungrouped/Victor SPX [30]": "Motor Controller",
       "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
       "/SmartDashboard/Autonomous": "String Chooser",
-      "/SmartDashboard/Climber View": "Mechanism2d",
       "/SmartDashboard/Field": "Field2d"
     },
     "windows": {
-      "/LiveWindow/Intake/Intake Mechanism2d": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/LiveWindow/SimClimber": {
-        "window": {
-          "visible": true
-        }
-      },
-      "/SmartDashboard/Climber View": {
+      "/SmartDashboard/Autonomous": {
         "window": {
           "visible": true
         }
@@ -94,14 +29,25 @@
     }
   },
   "NetworkTables": {
-    "SmartDashboard": {
-      "Climber": {
+    "Persistent Values": {
+      "open": false
+    },
+    "transitory": {
+      "SmartDashboard": {
+        "Alignment": {
+          "Rotation": {
+            "open": true
+          },
+          "Translation": {
+            "open": true
+          },
+          "open": true
+        },
+        "Swerve": {
+          "open": true
+        },
         "open": true
-      },
-      "Intake": {
-        "open": true
-      },
-      "open": true
+      }
     }
   }
 }
