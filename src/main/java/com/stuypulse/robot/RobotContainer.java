@@ -7,6 +7,7 @@ package com.stuypulse.robot;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.stuypulse.robot.commands.auton.DoNothingAuton;
+import com.stuypulse.robot.commands.auton.MobilityAuton;
 import com.stuypulse.robot.commands.drivetrain.DrivetrainDriveCommand;
 import com.stuypulse.robot.commands.drivetrain.DrivetrainRamseteCommand;
 import com.stuypulse.robot.commands.drivetrain.DrivetrainAlignCommand;

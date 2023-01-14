@@ -39,14 +39,7 @@ public class SamAutoEngage extends CommandBase {
 
         double velocity = velocityController.update(target, distance);
 
-        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(
-            velocity,
-            0.0,
-            0.0,
-            swerve.getAngle()
-        );
-
-        swerve.setStates(speeds);
+        swerve.setStates(new ChassisSpeeds(velocity, 0.0, 0.0), true);
     }
 
     @Override 

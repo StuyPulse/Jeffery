@@ -37,15 +37,10 @@ public class SetpointAutoEngage extends CommandBase {
         // results in velocity 
         double velocity = controller.update(target, distance);
 
-        ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds( 
-            // set variable speeds to velocities (linear=Vx, sideways=0, angular = 0)
-            velocity,
-            0,
-            0,
-            swerve.getAngle()
-        );
-
-        swerve.setStates(speeds); // set swerve drive to the speeds you want
+        swerve.setStates(
+            new ChassisSpeeds(velocity, 0, 0),
+            true
+        ); // set swerve drive to the speeds you want
     }
 
     @Override 
@@ -55,7 +50,7 @@ public class SetpointAutoEngage extends CommandBase {
 
     @Override 
     public void end(boolean interrupted) {
-        swerve.setStates(new ChassisSpeeds(0, 0, 0)); 
+        swerve.stop();
         // set the states(velocity) of the swerve drive to 0, which stops it
     }
 }

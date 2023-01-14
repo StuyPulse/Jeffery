@@ -211,6 +211,10 @@ public class SwerveDrive extends SubsystemBase {
         setStates(kinematics.toSwerveModuleStates(robotSpeed));
     }
 
+    public void stop() {
+        setStates(new ChassisSpeeds(0,0,0), false);
+    }
+
     public void setStates(SwerveModuleState... states) {
         if (states.length != modules.length) {
             throw new IllegalArgumentException(

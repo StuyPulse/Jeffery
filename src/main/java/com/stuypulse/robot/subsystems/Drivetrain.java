@@ -284,9 +284,6 @@ public class Drivetrain extends SubsystemBase {
     }
 
     public void reset(Pose2d location) {
-        resetNavX();
-        leftEncoder.setPosition(0);
-        rightEncoder.setPosition(0);
         // odometry.resetPosition(
         //         location.getRotation(),
         //         leftEncoder.getPosition(),

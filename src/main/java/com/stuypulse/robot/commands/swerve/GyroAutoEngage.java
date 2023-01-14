@@ -30,13 +30,7 @@ public class GyroAutoEngage extends CommandBase {
         distanceToTarget = target - swerve.getTranslation().getX();
         double velocity = distanceToTarget * Pitch.calculate(swerve.getGyroPitch(), swerve.getGyroRoll(), swerve.getAngle().getDegrees());
 
-        ChassisSpeeds speeds = new ChassisSpeeds(
-            MathUtil.clamp(velocity, -0.5, +0.5),
-            0,
-            0
-        );
-
-        swerve.setStates(speeds);
+        swerve.setStates(new ChassisSpeeds(MathUtil.clamp(velocity, -0.5, +0.5), 0, 0), true);
     }
 
     @Override 
