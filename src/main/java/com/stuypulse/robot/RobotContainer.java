@@ -23,7 +23,6 @@ import com.stuypulse.robot.commands.SwerveDriveToPose;
 import com.stuypulse.robot.commands.SwerveDriveToPoseMP;
 import com.stuypulse.robot.commands.auton.DoNothingAuton;
 import com.stuypulse.robot.commands.swerve.SwerveDriveDrive;
-import com.stuypulse.robot.commands.swerve.SwerveHome;
 import com.stuypulse.robot.commands.swerve.SwerveDriveHome;
 import com.stuypulse.robot.constants.Ports;
 import com.stuypulse.robot.subsystems.SwerveDrive;
@@ -92,7 +91,7 @@ public class RobotContainer {
         // new Pose2d(5.68, -3.36, new Rotation2d(Math.toRadians(10)))
 
         driver.getRightButton().whileTrue(new SwerveDriveToPose(swerve, new Pose2d(8, 4, new Rotation2d(0.78539))));
-        driver.getBottomButton().onTrue(new SwerveHome(swerve, new Pose2d(0, 4, new Rotation2d(0)) ));
+        driver.getBottomButton().onTrue(new SwerveDriveHome(swerve, new Pose2d(0, 4, new Rotation2d(0)) ));
         driver.getLeftButton().whileTrue(new SwerveDriveToPoseMP(swerve, new Pose2d(8, 4, new Rotation2d(0.78539))));
         driver.getTopButton().onTrue(new SwerveDriveHome(swerve));
 
