@@ -27,6 +27,11 @@ public interface Motors {
         CANSparkMaxConfig Turn = new CANSparkMaxConfig(false, IdleMode.kBrake, 20, 0.0);
     }
 
+    public interface Drivetrain {
+        CANSparkMaxConfig LEFT = new CANSparkMaxConfig(false, IdleMode.kBrake, 40, 0.0);
+        CANSparkMaxConfig RIGHT = new CANSparkMaxConfig(true, IdleMode.kBrake, 40, 0.0);
+    }
+
     /** Classes to store all of the values a motor needs */
 
     public static class TalonSRXConfig {
