@@ -21,6 +21,11 @@ import com.revrobotics.CANSparkMax.IdleMode;
  *  - The Open Loop Ramp Rate
  */
 public interface Motors {
+    
+    public interface Swerve {
+        CANSparkMaxConfig Drive = new CANSparkMaxConfig(false, IdleMode.kBrake, 40, 0.0);
+        CANSparkMaxConfig Turn = new CANSparkMaxConfig(false, IdleMode.kBrake, 20, 0.0);
+    }
 
     public interface Drivetrain {
         CANSparkMaxConfig LEFT = new CANSparkMaxConfig(false, IdleMode.kBrake, 40, 0.0);
