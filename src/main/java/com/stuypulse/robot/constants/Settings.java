@@ -41,7 +41,7 @@ public interface Settings {
         }
 
         public interface Turn {
-            SmartNumber RC = new SmartNumber("Driver Settings/Turn/RC", 0.1);
+            SmartNumber RC = new SmartNumber("Driver Settings/Turn/RC", 0.15);
             SmartNumber POWER = new SmartNumber("Driver Settings/Turn/Power", 2);
         }
 
@@ -130,7 +130,6 @@ public interface Settings {
 
             PIDConstants XY = new PIDConstants(1, 0, 0.1);
             PIDConstants THETA = new PIDConstants(10, 0, 0.1);
-
-        }   
+        }
     }
 }
