@@ -17,6 +17,8 @@ public abstract class IArm extends SubsystemBase {
 
     public abstract void setTargetAngle(double angle);
 
+    public abstract void move(double speed);
+
     public void addTargetAngle(double addedheight) {
         setTargetAngle(getTargetAngle() + addedheight);
     }
