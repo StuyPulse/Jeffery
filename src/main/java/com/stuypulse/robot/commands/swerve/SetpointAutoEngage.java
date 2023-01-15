@@ -17,8 +17,8 @@ public class SetpointAutoEngage extends CommandBase {
 
     private final Controller controller;
 
-    public SetpointAutoEngage() {
-        this.swerve = SwerveDrive.getInstance();
+    public SetpointAutoEngage(SwerveDrive swerve) {
+        this.swerve = swerve;
 
         this.controller = new PIDController(1, 0, 0);
 

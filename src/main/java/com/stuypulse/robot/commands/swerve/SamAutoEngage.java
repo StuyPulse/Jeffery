@@ -18,8 +18,8 @@ public class SamAutoEngage extends CommandBase {
 
     private final Controller tiltController, velocityController;
     
-    public SamAutoEngage() {
-        this.swerve = SwerveDrive.getInstance();
+    public SamAutoEngage(SwerveDrive swerve) {
+        this.swerve = swerve;
 
         tiltController = new PIDController(1,0,0);
         velocityController = new PIDController(1,0,0);

@@ -17,8 +17,8 @@ public class GyroAutoEngage extends CommandBase {
 
     private double distanceToTarget;
 
-    public GyroAutoEngage() {
-        this.swerve = SwerveDrive.getInstance();
+    public GyroAutoEngage(SwerveDrive swerve) {
+        this.swerve = swerve;
 
         addRequirements(swerve);
     }

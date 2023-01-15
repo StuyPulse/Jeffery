@@ -19,6 +19,7 @@ import com.stuypulse.stuylib.math.Vector2D;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -32,12 +33,13 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.Timer;
 
 public class SwerveDrive extends SubsystemBase {
 
     private static SwerveDrive instance = null;
 
-    public static SwerveDrive getInstance() {
+    public static SwerveDrive getInstance(ICamera camera) {
         if (instance == null) {
             if (RobotBase.isReal()) {
                 instance = new SwerveDrive(new SwerveModule[] {
@@ -45,7 +47,7 @@ public class SwerveDrive extends SubsystemBase {
                     new SL_SwerveModule(FrontLeft.ID, FrontLeft.MODULE_OFFSET, Ports.Swerve.FrontLeft.TURN, Ports.Swerve.FrontLeft.ENCODER, FrontLeft.ABSOLUTE_OFFSET, Ports.Swerve.FrontLeft.DRIVE),
                     new SL_SwerveModule(BackLeft.ID, BackLeft.MODULE_OFFSET, Ports.Swerve.BackLeft.TURN, Ports.Swerve.BackLeft.ENCODER, BackLeft.ABSOLUTE_OFFSET, Ports.Swerve.BackLeft.DRIVE),
                     new SL_SwerveModule(BackRight.ID, BackRight.MODULE_OFFSET, Ports.Swerve.BackRight.TURN, Ports.Swerve.BackRight.ENCODER, BackRight.ABSOLUTE_OFFSET, Ports.Swerve.BackRight.DRIVE)
-                });
+                }, camera);
     
                 // instance = new SwerveDrive(new SwerveModule[] {
                 //     new SparkMax_Module(FrontRight.ID, FrontRight.MODULE_OFFSET, Ports.Swerve.FrontRight.TURN, Ports.Swerve.FrontRight.ENCODER, FrontRight.ABSOLUTE_OFFSET.getRotation2d(), Ports.Swerve.FrontRight.DRIVE),
@@ -59,7 +61,7 @@ public class SwerveDrive extends SubsystemBase {
                     new SL_SimModule(FrontLeft.ID, FrontLeft.MODULE_OFFSET),
                     new SL_SimModule(BackLeft.ID, BackLeft.MODULE_OFFSET),
                     new SL_SimModule(BackRight.ID, BackRight.MODULE_OFFSET)
-                });
+                }, camera);
             }
         }
         return instance;
@@ -79,8 +81,10 @@ public class SwerveDrive extends SubsystemBase {
     private final Field2d field;
     private final FieldObject2d[] module2ds;
 
+    private final ICamera camera;
 
-    public SwerveDrive(SwerveModule[] modules) {
+
+    public SwerveDrive(SwerveModule[] modules, ICamera camera) {
         this.modules = modules;
 
         gyro = new AHRS(SPI.Port.kMXP);
@@ -101,6 +105,8 @@ public class SwerveDrive extends SubsystemBase {
 
         reset(new Pose2d());
         SmartDashboard.putData("Field", field);
+
+        this.camera = camera;
     }
 
     public Field2d getField() {
@@ -246,10 +252,19 @@ public class SwerveDrive extends SubsystemBase {
 
     private void updatePose() {
         poseEstimator.update(getGyroAngle(), getModulePositions());
-        // ICamera camera = ICamera.getInstance();
-        // if (camera.hasTarget()) {
-        //     poseEstimator.addVisionMeasurement(camera.getRobotPose(), Timer.getFPGATimestamp() - camera.getLatency());
-        // }
+        
+        if (camera.hasTarget()) {
+            Pose3d pose = camera.getPose3d();
+            SmartDashboard.putNumber("Swerve/X Pose from Tag", pose.getX());
+            SmartDashboard.putNumber("Swerve/Y Pose from Tag", pose.getY());
+            SmartDashboard.putNumber("Swerve/Z Pose from Tag", pose.getZ());
+            Translation2d robotPosition = new Translation2d(pose.getX(), pose.getY());
+            if (getPose().getTranslation().minus(robotPosition).getNorm() < 1.0) {
+                poseEstimator.addVisionMeasurement(
+                        new Pose2d(pose.getX(), pose.getY(), pose.getRotation().toRotation2d()),
+                        Timer.getFPGATimestamp());
+            }
+        }
     }
 
     public Pose2d getPose() {
