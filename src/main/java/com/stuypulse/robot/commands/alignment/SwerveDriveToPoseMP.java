@@ -1,4 +1,4 @@
-package com.stuypulse.robot.commands;
+package com.stuypulse.robot.commands.alignment;
 
 import com.stuypulse.robot.subsystems.SwerveDrive;
 import com.stuypulse.stuylib.control.Controller;
@@ -13,6 +13,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
+import com.stuypulse.robot.constants.Settings.Swerve.*;
 import com.stuypulse.robot.constants.Settings.AlignmentCommand.*;
 
 
@@ -31,9 +32,9 @@ public class SwerveDriveToPoseMP extends CommandBase {
         this.targetPose = targetPose;
         
         xPID = new PIDController(Translation.P, Translation.I, Translation.D)
-            .setSetpointFilter(new MotionProfile(2, 3));
+            .setSetpointFilter(new MotionProfile(Chassis.MAX_SPEED, Chassis.MAX_ACCELERATION));
         yPID = new PIDController(Translation.P, Translation.I, Translation.D)
-            .setSetpointFilter(new MotionProfile(2, 3));
+            .setSetpointFilter(new MotionProfile(Chassis.MAX_SPEED, Chassis.MAX_ACCELERATION));
         anglePID = new AnglePIDController(Rotation.P, Rotation.I, Rotation.D)
             .setSetpointFilter(AFilter.create(x -> Angle.fromRadians(targetPose.getRotation().getRadians())));
     

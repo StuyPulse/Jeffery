@@ -4,7 +4,8 @@
       "/FMSInfo": "FMSInfo",
       "/SmartDashboard/Autonomous": "String Chooser",
       "/SmartDashboard/Edwin/Field": "Field2d",
-      "/SmartDashboard/Field": "Field2d"
+      "/SmartDashboard/Field": "Field2d",
+      "/SmartDashboard/PPRamseteCommand_field": "Field2d"
     },
     "windows": {
       "/SmartDashboard/Edwin/Field": {

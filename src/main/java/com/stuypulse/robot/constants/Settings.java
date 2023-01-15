@@ -244,6 +244,7 @@ public interface Settings {
             double WIDTH = Units.inchesToMeters(29.0);
             double HEIGHT = Units.inchesToMeters(29.0);
             double MAX_SPEED = 4.2;
+            double MAX_ACCELERATION = 1;// random number
         }
 
         public interface Drive {

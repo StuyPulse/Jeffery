@@ -4,9 +4,14 @@
       "visible": false
     }
   },
-  "Keyboard 0 Settings": {
+  "Keyboard 1 Settings": {
     "window": {
       "visible": true
+    }
+  },
+  "System Joysticks": {
+    "window": {
+      "visible": false
     }
   },
   "keyboardJoysticks": [

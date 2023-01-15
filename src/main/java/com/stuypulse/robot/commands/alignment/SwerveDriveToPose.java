@@ -1,4 +1,4 @@
-package com.stuypulse.robot.commands;
+package com.stuypulse.robot.commands.alignment;
 
 import com.stuypulse.robot.subsystems.SwerveDrive;
 import com.stuypulse.stuylib.control.Controller;
@@ -27,13 +27,6 @@ public class SwerveDriveToPose extends CommandBase {
     public SwerveDriveToPose(SwerveDrive swerve, Pose2d targetPose ){
         this.swerve = swerve;
         this.targetPose = targetPose;
-        
-        // xPID = new PIDController(Translation.P, Translation.I, Translation.D).
-        //     setSetpointFilter(new MotionProfile(2, 3));
-        // yPID = new PIDController(Translation.P, Translation.I, Translation.D).
-        //     setSetpointFilter(new MotionProfile(2, 3));
-        // anglePID = new PIDController(Rotation.P, Rotation.I, Translation.D).
-        //     setSetpointFilter(new MotionProfile(2, 3));
         
         xPID = new PIDController(Translation.P, Translation.I, Translation.D);
         yPID = new PIDController(Translation.P, Translation.I, Translation.D);
