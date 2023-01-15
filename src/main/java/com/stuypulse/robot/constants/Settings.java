@@ -22,7 +22,9 @@ import com.stuypulse.stuylib.streams.filters.LowPassFilter;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.util.Units;
@@ -125,6 +127,18 @@ public interface Settings {
         double HUB_HEIGHT = Units.feetToMeters(8) + Units.inchesToMeters(9);
         double HUB_TO_CENTER = Units.feetToMeters(2.0);
         Translation2d HUB = new Translation2d(Units.feetToMeters(12.8), 0);
+
+        public interface Tag1 {
+            Pose3d POSE = new Pose3d(
+                Units.inchesToMeters(94),
+                Units.inchesToMeters(20),
+                Units.inchesToMeters(78),
+                new Rotation3d(
+                    0,
+                    0,
+                    Units.degreesToRadians(-155)
+                ));
+        }
     }
 
     public interface Alignment {
