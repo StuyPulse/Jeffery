@@ -78,11 +78,11 @@ public class RobotContainer {
 
     private void configureButtonBindings() {
 
-        // driver.getLeftButton()
-        //         .onTrue(new InstantCommand(
-        //                 // () -> drivetrain.setPose(new Pose2d(5.68, -3.36, new Rotation2d(Math.toRadians(10)))),
-        //                 () -> drivetrain.setPose(Settings.STARTING_POSE))
-        //                 );
+        driver.getLeftButton()
+                .onTrue(new InstantCommand(
+                        // () -> drivetrain.setPose(new Pose2d(5.68, -3.36, new Rotation2d(Math.toRadians(10)))),
+                        () -> swerve.reset(Settings.STARTING_POSE))
+                        );
 
         // driver.getBottomButton().onTrue(new DrivetrainAlignCommand(drivetrain, camera, Alignment.TARGET_POSE));
 

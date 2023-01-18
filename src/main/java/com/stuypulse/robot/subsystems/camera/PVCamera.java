@@ -33,10 +33,6 @@ public class PVCamera extends ICamera {
         PortForwarder.add(5800, "photonvision.local", 5800);
     }
 
-    public PVCamera() {
-        this("photonvision");
-    }
-
     // private void forceUpdateResult() {
     //     result = camera.getLatestResult();
     // }

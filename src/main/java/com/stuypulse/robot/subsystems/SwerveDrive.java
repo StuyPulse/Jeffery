@@ -258,12 +258,17 @@ public class SwerveDrive extends SubsystemBase {
             SmartDashboard.putNumber("Swerve/X Pose from Tag", pose.getX());
             SmartDashboard.putNumber("Swerve/Y Pose from Tag", pose.getY());
             SmartDashboard.putNumber("Swerve/Z Pose from Tag", pose.getZ());
-            Translation2d robotPosition = new Translation2d(pose.getX(), pose.getY());
-            if (getPose().getTranslation().minus(robotPosition).getNorm() < 1.0) {
-                poseEstimator.addVisionMeasurement(
-                        new Pose2d(pose.getX(), pose.getY(), pose.getRotation().toRotation2d()),
-                        Timer.getFPGATimestamp());
-            }
+
+            poseEstimator.addVisionMeasurement(
+                camera.getPose2d(), 
+                Timer.getFPGATimestamp());
+
+            // Translation2d robotPosition = new Translation2d(pose.getX(), pose.getY());
+            // if (getPose().getTranslation().minus(robotPosition).getNorm() < 1.0) {
+            //     poseEstimator.addVisionMeasurement(
+            //             new Pose2d(pose.getX(), pose.getY(), pose.getRotation().toRotation2d()),
+            //             Timer.getFPGATimestamp());
+            // }
         }
     }
 
@@ -296,10 +301,10 @@ public class SwerveDrive extends SubsystemBase {
         // TODO: log angular velocity and velocity vector
         SmartDashboard.putNumber("Swerve/Pose X", getPose().getTranslation().getX());
         SmartDashboard.putNumber("Swerve/Pose Y", getPose().getTranslation().getY());
-        SmartDashboard.putNumber("Swerve/Pose Angle", getAngle().getDegrees());
+        SmartDashboard.putNumber("Swerve/Pose Angle (deg)", getAngle().getDegrees());
         SmartDashboard.putNumber("Swerve/Gyro Angle", gyro.getRotation2d().getDegrees());
         SmartDashboard.putNumber("Swerve/Bottom Right Module Speed", getModule("Back Right").getState().speedMetersPerSecond);
-        SmartDashboard.putNumber("Swerve/Angle", getAngle().getRadians());
+        SmartDashboard.putNumber("Swerve/Pose Angle (rad)", getAngle().getRadians());
 
     }
 
