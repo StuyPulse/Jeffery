@@ -11,20 +11,38 @@ public abstract class IArm extends SubsystemBase {
     }
     */
 
-    public abstract double getTargetAngle();
+    public abstract double getTargetAngle1();
 
-    public abstract double getAngle();
+    public abstract double getTargetAngle2();
 
-    public abstract void setTargetAngle(double angle);
+    public abstract double getAngle1();
 
-    public abstract void move(double speed);
+    public abstract double getAngle2();
 
-    public void addTargetAngle(double addedheight) {
-        setTargetAngle(getTargetAngle() + addedheight);
+    public abstract void setTargetAngle1(double angle);
+
+    public abstract void setTargetAngle2(double angle);
+
+
+    public abstract void moveArm(double speed);
+
+    public abstract void moveWrist(double speed);
+
+
+    public void addTargetAngle1(double addedheight) {
+        setTargetAngle1(getTargetAngle1() + addedheight);
+    }
+    
+    public void addTargetAngle2(double addedheight) {
+        setTargetAngle2(getTargetAngle2() + addedheight);
     }
 
-    public boolean atAngle(double maxerror) {
-        return Math.abs(getAngle() - getTargetAngle()) < maxerror;
+    public boolean jointOneAtAngle(double maxerror) {
+        return Math.abs(getAngle1() - getTargetAngle1()) < maxerror;
+    }
+
+    public boolean jointTwoAtAngle(double maxerror) {
+        return Math.abs(getAngle2() - getTargetAngle2()) < maxerror;
     }
 
 }
