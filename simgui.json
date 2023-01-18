@@ -2,10 +2,23 @@
   "NTProvider": {
     "types": {
       "/FMSInfo": "FMSInfo",
+      "/LiveWindow/SL_SimModule": "Subsystem",
+      "/LiveWindow/Ungrouped/DifferentialDrive[1]": "DifferentialDrive",
+      "/LiveWindow/Ungrouped/PIDController[1]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[2]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[3]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[4]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[5]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[6]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[7]": "PIDController",
+      "/LiveWindow/Ungrouped/PIDController[8]": "PIDController",
+      "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/LiveWindow/Ungrouped/navX-Sensor[4]": "Gyro",
       "/SmartDashboard/Autonomous": "String Chooser",
       "/SmartDashboard/Edwin/Field": "Field2d",
       "/SmartDashboard/Field": "Field2d",
-      "/SmartDashboard/PPRamseteCommand_field": "Field2d"
+      "/SmartDashboard/PPRamseteCommand_field": "Field2d",
+      "/SmartDashboard/PPSwerveControllerCommand_field": "Field2d"
     },
     "windows": {
       "/SmartDashboard/Edwin/Field": {
