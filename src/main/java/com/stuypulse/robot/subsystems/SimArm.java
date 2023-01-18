@@ -108,7 +108,8 @@ public class SimArm extends IArm {
         controller2.update(getTargetAngle2(), getAngle2());
         
         armSim.setInput(MathUtil.clamp(
-            controller1.update(getTargetAngle1(), getAngle1());
+            controller1.update(getTargetAngle1(), getAngle1()),
+            -RoboRioSim.getVInVoltage(),
             +RoboRioSim.getVInVoltage()));
 
         wristSim.setInput(MathUtil.clamp(
