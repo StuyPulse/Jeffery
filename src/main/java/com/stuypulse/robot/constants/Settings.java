@@ -43,7 +43,7 @@ import edu.wpi.first.math.util.Units;
  */
 public interface Settings {
 
-    Pose2d STARTING_POSE = new Pose2d(Units.inchesToMeters(130), Units.inchesToMeters(16) + 0.89, new Rotation2d(Math.toRadians(180)));
+    Pose2d STARTING_POSE = new Pose2d(Units.inchesToMeters(30) + Drivetrain.TRACK_WIDTH / 2, Units.inchesToMeters(0) + 0.89, new Rotation2d(Math.toRadians(180)));
 
     Path DEPLOY_DIRECTORY = Filesystem.getDeployDirectory().toPath();
 
