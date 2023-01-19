@@ -5,8 +5,6 @@
 
 package com.stuypulse.robot.constants;
 
-import com.stuypulse.stuylib.network.SmartBoolean;
-import com.stuypulse.stuylib.network.SmartNumber;
 
 /*-
  * File containing tunable settings for every subsystem on the robot.
@@ -26,10 +24,34 @@ public interface Settings {
         double MIDGOAL = -1;
         double HIGHGOAL = -1;
 
-        public interface PID {
-            double kP = -1;
-            double kI = -1;
-            double kD = -1;
+        public interface ArmArm {
+            public interface PID {
+                double kP = -1;
+                double kI = -1;
+                double kD = -1;
+            }
+
+            public interface Feedforward {
+                double kA = -1;
+                double kG = -1;
+                double kV = -1;
+            }
         }
+
+        public interface Wrist {
+            public interface PID {
+                double kP = -1;
+                double kI = -1;
+                double kD = -1;
+            }
+
+            public interface Feedforward {
+                double kA = -1;
+                double kG = -1;
+                double kV = -1;
+            }
+        }
+
+        
     }
 }

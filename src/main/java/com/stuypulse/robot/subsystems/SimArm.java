@@ -19,6 +19,7 @@ import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 
 // IGNORE***: Two single jointed arms, first one contantly change r. use Ia = rFsin(theta) to find a, mass should be same, find r.
@@ -35,8 +36,11 @@ public class SimArm extends IArm {
     
     private final LinearSystemSim<N2, N1, N1> armSim;
     private final LinearSystemSim<N2, N1, N1> wristSim;
-    
-    private final Controller controller1;
+
+    private final MechanismLigament2d armLigament;
+    private final MechanismLigament2d wristLigament;
+
+    private final Controller controller1; 
     private final Controller controller2;
 
     private final SmartNumber targetAngle1;
@@ -47,52 +51,53 @@ public class SimArm extends IArm {
         
         // simulation
         armSim = new LinearSystemSim<>(LinearSystemId.identifyPositionSystem(kV.get(), kA.get()));
-        wristSim = new LinearSystemSim<>(LinearSystemId.identifyPositionSystem(kV.get(),kA.get()))
+        //wristSim = new LinearSystemSim<>(LinearSystemId.identifyPositionSystem(kV.get(),kA.get()))
 
-        //controller initaliation
-        controller1 = new PIDController(Settings.Arm.kP, Settings.Arm.kI, Settings.Arm.kD).add(new Feedforward(kG,kA,kV));
+        //controller initialization
+        controller1 = new PIDController(Settings.Arm.ArmArm.PID.kP, Settings.Arm.ArmArm.PID.kI, Settings.Arm.ArmArm.PID.kD).add(new Feedforward(kG,kA,kV));
         controller2 = new PIDController(Settings.Arm.kP, Settings.Arm.kI, Settings.Arm.kD).add(new Feedforward(kG,kA,kV));
 
+        // ligament initialization
+        Mechanism2d arm = new Mechanism2d(2, 2);
+        MechanismRoot2d armRoot = arm.getRoot("Arm Root", 1 , 1);
+        armLigament = armRoot.append(new MechanismLigament2d("Arm Arm", 1, 1));
 
+        addChild("Arm Mechanism2d", arm);
+
+        // Mechanism2d wrist = armLigament.append(new MechanismLigament2d("Wrist Arm", 1, 1));
+        // armLigament.append(wrist);
+        // addChild("Wrist Mechanism2d", wrist);
+
+        // SmartNumber initialization
         targetAngle1 = new SmartNumber("Arm/Target Angle 1", 0);
-        targetAngle2 = new SmartNumber("Arm/Target Angle 2", 0);
+        //targetAngle2 = new SmartNumber("Arm/Target Angle 2", 0);
     }
     
-    /** 
-        @return target angle of arm
-    */
     public double getTargetAngle1() {
         return targetAngle1.get();
     }
 
-    /** 
-        @return target angle of wrist
-    */
-    public double getTargetAngle2() {
-        return targetAngle2.get();
-    }
+    // public double getTargetAngle2() {
+    //     return targetAngle2.get();
+    // }
 
-    /** 
-        @return current angle of arm
-    */
+
     public double getAngle1() {
         return armSim.getOutput(0);
     }
 
-    /** 
-        @return current angle of wrist
-    */
-    public double getAngle2() {
-        return wristSim.getOutput(0);
-    }
+    
+    // public double getAngle2() {
+    //     return wristSim.getOutput(0);
+    // }
 
     public void setTargetAngle1(double angle) {
         targetAngle1.set(angle);
     }
 
-    public void setTargetAngle2(double angle) {
-        targetAngle2.set(angle);
-    }
+    // public void setTargetAngle2(double angle) {
+    //     targetAngle2.set(angle);
+    // }
 
     public void moveArm(double speed) {   
         armSim.setInput(SLMath.clamp(speed, -1, +1) * 12);
@@ -105,16 +110,23 @@ public class SimArm extends IArm {
     @Override
     public void periodic() {
         controller1.update(getTargetAngle1(), getAngle1());
-        controller2.update(getTargetAngle2(), getAngle2());
+        // controller2.update(getTargetAngle2(), getAngle2());
         
         armSim.setInput(MathUtil.clamp(
             controller1.update(getTargetAngle1(), getAngle1()),
             -RoboRioSim.getVInVoltage(),
             +RoboRioSim.getVInVoltage()));
 
-        wristSim.setInput(MathUtil.clamp(
-            controller2.update(getTargetAngle2(), getAngle2()),
-            -RoboRioSim.getVInVoltage(),
-            +RoboRioSim.getVInVoltage()));
+        // wristSim.setInput(MathUtil.clamp(
+        //     controller2.update(getTargetAngle2(), getAngle2()),
+        //     -RoboRioSim.getVInVoltage(),
+        //     +RoboRioSim.getVInVoltage()));
+
+        armLigament.setAngle(getAngle1() + 90);
+
+        SmartDashboard.putNumber("Arm Angle", getAngle1());
+        // SmartDashboard.putNumber("Wrist Angle", getAngle2());
+        SmartDashboard.putNumber("Arm Voltage", controller1.getOutput());
+        // SmartDashboard.putNumber("Wrist Voltage", controller2.getOutput());
     }
 }
