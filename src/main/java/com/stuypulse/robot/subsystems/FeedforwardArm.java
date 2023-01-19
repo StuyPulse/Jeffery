@@ -1,8 +1,9 @@
 package com.stuypulse.robot.subsystems;
 
+import com.stuypulse.stuylib.control.Controller;
 import com.stuypulse.stuylib.control.feedforward.Feedforward.Motor;
 
-public class FeedforwardArm extends Motor {
+public class FeedforwardArm extends Controller {
     /** Additional term to account for gravity */
     private final Number kG;
 
@@ -15,8 +16,7 @@ public class FeedforwardArm extends Motor {
      * @param kA volts * seconds^2 / distance, describes voltage needed to move at an
      *     acceleration
      */
-    public FeedforwardArm(Number kG, Number kS, Number kV, Number kA) {
-        super(kS, kV, kA);
+    public FeedforwardArm(Number kG, Number kS, Number kV, Number kA) {\
         this.kG = kG;
     }
 
@@ -27,8 +27,7 @@ public class FeedforwardArm extends Motor {
      * @param acceleration desired acceleration
      * @return volts to account for elevator movement
      */
-    @Override
-    protected double calculate(double velocity, double acceleration) {
-        return kG.doubleValue() + super.calculate(velocity, acceleration);
+    protected double calculate(double setpoint, double measurement) {
+//derivative of setpoint
     }
 }
