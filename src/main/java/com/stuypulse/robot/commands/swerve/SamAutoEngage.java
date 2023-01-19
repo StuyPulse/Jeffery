@@ -29,7 +29,7 @@ public class SamAutoEngage extends CommandBase {
 
     @Override
     public void execute() {
-        double balanceAngle = Pitch.calculate(swerve.getGyroPitch(), swerve.getGyroRoll(), swerve.getAngle().getDegrees());
+        double balanceAngle = Pitch.calculate(swerve.getGyroPitch().getRadians(), swerve.getGyroRoll().getRadians(), swerve.getAngle().getRadians());
         double offset = tiltController.update(0, balanceAngle);
 
         double target = Units.inchesToMeters(Field.CHARGING_STATION_CENTER.getX());

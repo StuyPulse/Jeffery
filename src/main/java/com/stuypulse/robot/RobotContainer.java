@@ -21,6 +21,7 @@ import com.stuypulse.robot.subsystems.camera.PVCamera;
 import com.stuypulse.robot.commands.SwerveDriveToPose;
 import com.stuypulse.robot.commands.SwerveDriveToPoseMP;
 import com.stuypulse.robot.commands.auton.DoNothingAuton;
+import com.stuypulse.robot.commands.swerve.GyroAutoEngage;
 import com.stuypulse.robot.commands.swerve.SwerveDriveDrive;
 import com.stuypulse.robot.commands.swerve.SwerveDriveHome;
 import com.stuypulse.robot.constants.Ports;
@@ -77,6 +78,9 @@ public class RobotContainer {
     /***************/
 
     private void configureButtonBindings() {
+
+        driver.getRightBumper()
+            .whileTrue(new GyroAutoEngage(swerve));
 
         driver.getLeftButton()
                 .onTrue(new InstantCommand(

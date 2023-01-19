@@ -14,6 +14,7 @@ import com.stuypulse.robot.constants.Settings.Swerve.Chassis;
 import com.stuypulse.robot.subsystems.modules.SL_SimModule;
 import com.stuypulse.robot.subsystems.modules.SL_SwerveModule;
 import com.stuypulse.robot.subsystems.modules.SwerveModule;
+import com.stuypulse.robot.util.Pitch;
 import com.stuypulse.stuylib.math.Vector2D;
 
 import edu.wpi.first.math.VecBuilder;
@@ -240,12 +241,12 @@ public class SwerveDrive extends SubsystemBase {
         return gyro.getRotation2d();
     }
 
-    public double getGyroPitch() {
-        return gyro.getPitch();
+    public Rotation2d getGyroPitch() {
+        return Rotation2d.fromDegrees(gyro.getPitch());
     }
 
-    public double getGyroRoll() {
-        return gyro.getRoll();
+    public Rotation2d getGyroRoll() {
+        return Rotation2d.fromDegrees(gyro.getRoll());
     }
 
     /** ODOMETRY API */
@@ -253,6 +254,7 @@ public class SwerveDrive extends SubsystemBase {
     private void updatePose() {
         poseEstimator.update(getGyroAngle(), getModulePositions());
         
+        // if (false) {
         if (camera.hasTarget()) {
             Pose3d pose = camera.getPose3d();
             SmartDashboard.putNumber("Swerve/X Pose from Tag", pose.getX());
@@ -301,10 +303,20 @@ public class SwerveDrive extends SubsystemBase {
         // TODO: log angular velocity and velocity vector
         SmartDashboard.putNumber("Swerve/Pose X", getPose().getTranslation().getX());
         SmartDashboard.putNumber("Swerve/Pose Y", getPose().getTranslation().getY());
+        double deg = getAngle().getDegrees();
+        if (deg < 0) deg += 360;
         SmartDashboard.putNumber("Swerve/Pose Angle (deg)", getAngle().getDegrees());
-        SmartDashboard.putNumber("Swerve/Gyro Angle", gyro.getRotation2d().getDegrees());
+        SmartDashboard.putNumber("Swerve/0-360 Pose Angle (deg)", deg);
+        SmartDashboard.putNumber("Swerve/Gyro Angle", getAngle().getDegrees());
+        SmartDashboard.putNumber("Swerve/Gyro Pitch", getGyroPitch().getDegrees());
+        SmartDashboard.putNumber("Swerve/Gyro Roll", getGyroRoll().getDegrees());
         SmartDashboard.putNumber("Swerve/Bottom Right Module Speed", getModule("Back Right").getState().speedMetersPerSecond);
         SmartDashboard.putNumber("Swerve/Pose Angle (rad)", getAngle().getRadians());
+
+        SmartDashboard.putNumber("Swerve/Charge Station Angle (rad)", Pitch.calculate(
+            getGyroPitch().getRadians(),
+            getGyroRoll().getRadians(),
+            getGyroAngle().getRadians()));
 
     }
 
