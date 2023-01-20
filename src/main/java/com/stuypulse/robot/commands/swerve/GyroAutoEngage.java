@@ -28,7 +28,7 @@ public class GyroAutoEngage extends CommandBase {
         double target = Units.inchesToMeters(Field.CHARGING_STATION_CENTER.getX());
 
         distanceToTarget = target - swerve.getTranslation().getX();
-        double velocity = distanceToTarget * Pitch.calculate(swerve.getGyroPitch().getRadians(), swerve.getGyroRoll().getRadians(), swerve.getAngle().getRadians());
+        double velocity = distanceToTarget * Pitch.calculate(swerve.getGyroPitch(), swerve.getGyroRoll(), swerve.getAngle()).getDegrees();
 
         swerve.setStates(new ChassisSpeeds(MathUtil.clamp(velocity, -0.5, +0.5), 0, 0), true);
     }

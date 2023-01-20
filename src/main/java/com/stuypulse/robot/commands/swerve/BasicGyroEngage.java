@@ -21,17 +21,17 @@ public class BasicGyroEngage extends CommandBase {
     public BasicGyroEngage(SwerveDrive swerve) {
         this.swerve = swerve;
 
-        MAX_TILT = new SmartNumber("Engage/Max Tilt (deg)", 20.0);
-        MAX_ENGAGE_SPEED = new SmartNumber("Engage/Max Engage Speed (m per s)", 1.0);
+        MAX_TILT = new SmartNumber("Engage/Max Tilt (deg)", 15.0);
+        MAX_ENGAGE_SPEED = new SmartNumber("Engage/Max Engage Speed (m per s)", 0.25);
 
-        control = new PIDController(IStream.create(() -> MAX_ENGAGE_SPEED.get() / MAX_TILT.get()).number(), 0, null);
+        control = new PIDController(IStream.create(() -> MAX_ENGAGE_SPEED.get() / MAX_TILT.get()).number(), 0, 0);
     }
 
     @Override
     public void execute() {
         double speed = control.update(
             0,
-            Pitch.calculate(swerve.getGyroPitch().getRadians(), swerve.getGyroRoll().getRadians(), swerve.getAngle().getRadians()));
+            -1 * Pitch.calculate(swerve.getGyroPitch(), swerve.getGyroRoll(), swerve.getAngle()).getDegrees());
         
         swerve.setStates(new ChassisSpeeds(speed, 0, 0), true);
     }

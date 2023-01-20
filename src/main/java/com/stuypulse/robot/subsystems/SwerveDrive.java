@@ -254,8 +254,8 @@ public class SwerveDrive extends SubsystemBase {
     private void updatePose() {
         poseEstimator.update(getGyroAngle(), getModulePositions());
         
-        // if (false) {
-        if (camera.hasTarget()) {
+        if (false) {
+        // if (camera.hasTarget()) {
             Pose3d pose = camera.getPose3d();
             SmartDashboard.putNumber("Swerve/X Pose from Tag", pose.getX());
             SmartDashboard.putNumber("Swerve/Y Pose from Tag", pose.getY());
@@ -314,9 +314,9 @@ public class SwerveDrive extends SubsystemBase {
         SmartDashboard.putNumber("Swerve/Pose Angle (rad)", getAngle().getRadians());
 
         SmartDashboard.putNumber("Swerve/Charge Station Angle (rad)", Pitch.calculate(
-            getGyroPitch().getRadians(),
-            getGyroRoll().getRadians(),
-            getGyroAngle().getRadians()));
+            getGyroPitch(),
+            getGyroRoll(),
+            getAngle()).getDegrees());
 
     }
 
