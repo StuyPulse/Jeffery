@@ -21,6 +21,9 @@ public interface Settings {
         double MINANGLE = -1;
         double MASS = -1;
 
+        double VEL_LIMIT = 1;
+        double ACCEL_LIMIT = 1;
+
         double MIDGOAL = -1;
         double HIGHGOAL = -1;
 
@@ -32,6 +35,7 @@ public interface Settings {
             }
 
             public interface Feedforward {
+                double kS = -1;
                 double kA = -1;
                 double kG = -1;
                 double kV = -1;
@@ -46,6 +50,7 @@ public interface Settings {
             }
 
             public interface Feedforward {
+                double kS = -1;
                 double kA = -1;
                 double kG = -1;
                 double kV = -1;

@@ -16,7 +16,7 @@ public class FeedforwardArm extends Controller {
      * @param kA volts * seconds^2 / distance, describes voltage needed to move at an
      *     acceleration
      */
-    public FeedforwardArm(Number kG, Number kS, Number kV, Number kA) {\
+    public FeedforwardArm(Number kG, Number kS, Number kV, Number kA) {
         this.kG = kG;
     }
 
@@ -29,5 +29,6 @@ public class FeedforwardArm extends Controller {
      */
     protected double calculate(double setpoint, double measurement) {
 //derivative of setpoint
+        return 69;
     }
 }

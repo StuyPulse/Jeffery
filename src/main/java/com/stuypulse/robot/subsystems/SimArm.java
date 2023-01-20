@@ -6,6 +6,7 @@ import com.stuypulse.stuylib.control.feedback.PIDController;
 import com.stuypulse.stuylib.control.feedforward.Feedforward;
 import com.stuypulse.stuylib.math.SLMath;
 import com.stuypulse.stuylib.network.SmartNumber;
+import com.stuypulse.stuylib.streams.filters.MotionProfile;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.controller.ElevatorFeedforward;
@@ -36,7 +37,7 @@ public class SimArm extends IArm {
     private final LinearSystemSim<N2, N1, N1> wristSim;
 
     private final MechanismLigament2d armLigament;
-    private final MechanismLigament2d wristLigament;
+    // private final MechanismLigament2d wristLigament;
 
     private final Controller controller1; 
     private final Controller controller2;
@@ -49,13 +50,18 @@ public class SimArm extends IArm {
         
         // simulation
         armSim = new LinearSystemSim<>(LinearSystemId.identifyPositionSystem(Settings.Arm.ArmArm.Feedforward.kV, Settings.Arm.ArmArm.Feedforward.kA));
-        wristSim = new LinearSystemSim<>(LinearSystemId.identifyPositionSystem(Settings.Arm.Wrist.Feedforward.kV, Settings.Arm.Wrist.Feedforward.kA))
+        wristSim = new LinearSystemSim<>(LinearSystemId.identifyPositionSystem(Settings.Arm.Wrist.Feedforward.kV, Settings.Arm.Wrist.Feedforward.kA));
 
         //controller initialization
-        controller1 = new PIDController(Settings.Arm.ArmArm.PID.kP, Settings.Arm.ArmArm.PID.kI, Settings.Arm.ArmArm.PID.kD)
-            .add(new ElevatorFeedforward(Settings.Arm.Wrist.Feedforward.kG,Settings.Arm.Wrist.Feedforward.kA,Settings.Arm.Wrist.Feedforward.kV));
-        controller2 = new PIDController(Settings.Arm.Wrist.PID.kP, Settings.Arm.Wrist.PID.kI, Settings.Arm.Wrist.PID.kD)
-            .add(new ElevatorFeedforward(Settings.Arm.Wrist.Feedforward.kG,Settings.Arm.Wrist.Feedforward.kA,Settings.Arm.Wrist.Feedforward.kV));
+        controller1 = new Feedforward.Elevator(Settings.Arm.ArmArm.Feedforward.kG,Settings.Arm.ArmArm.Feedforward.kS, Settings.Arm.ArmArm.Feedforward.kA,Settings.Arm.ArmArm.Feedforward.kV).position()
+            .add(new PIDController(Settings.Arm.ArmArm.PID.kP, Settings.Arm.ArmArm.PID.kI, Settings.Arm.ArmArm.PID.kD))
+            .setSetpointFilter(new MotionProfile(Settings.Arm.VEL_LIMIT, Settings.Arm.ACCEL_LIMIT));
+        
+        
+        controller2 = new Feedforward.Elevator(Settings.Arm.Wrist.Feedforward.kG,Settings.Arm.Wrist.Feedforward.kS, Settings.Arm.Wrist.Feedforward.kA,Settings.Arm.Wrist.Feedforward.kV).position()
+            .add(new PIDController(Settings.Arm.Wrist.PID.kP, Settings.Arm.Wrist.PID.kI, Settings.Arm.Wrist.PID.kD))
+            .setSetpointFilter(new MotionProfile(Settings.Arm.VEL_LIMIT, Settings.Arm.ACCEL_LIMIT));
+        
 
         // ligament initialization
         Mechanism2d arm = new Mechanism2d(2, 2);
