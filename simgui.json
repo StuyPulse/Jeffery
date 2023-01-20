@@ -3,7 +3,15 @@
     "types": {
       "/FMSInfo": "FMSInfo",
       "/LiveWindow/Ungrouped/Scheduler": "Scheduler",
+      "/SmartDashboard/Arm Mech2d": "Mechanism2d",
       "/SmartDashboard/Autonomous": "String Chooser"
+    },
+    "windows": {
+      "/SmartDashboard/Arm Mech2d": {
+        "window": {
+          "visible": true
+        }
+      }
     }
   },
   "NetworkTables": {
@@ -20,6 +28,14 @@
         },
         "open": true
       }
+    }
+  },
+  "NetworkTables Info": {
+    "Clients": {
+      "open": true
+    },
+    "Server": {
+      "open": true
     }
   }
 }

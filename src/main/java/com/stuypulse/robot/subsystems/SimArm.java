@@ -1,6 +1,7 @@
 package com.stuypulse.robot.subsystems;
 
 import com.stuypulse.robot.constants.Settings;
+import com.stuypulse.robot.constants.Settings.Arm.*;
 import com.stuypulse.stuylib.control.Controller;
 import com.stuypulse.stuylib.control.feedback.PIDController;
 import com.stuypulse.stuylib.control.feedforward.Feedforward;
@@ -9,12 +10,9 @@ import com.stuypulse.stuylib.network.SmartNumber;
 import com.stuypulse.stuylib.streams.filters.MotionProfile;
 
 import edu.wpi.first.math.MathUtil;
-import edu.wpi.first.math.controller.ElevatorFeedforward;
-import edu.wpi.first.math.numbers.N1;
-import edu.wpi.first.math.numbers.N2;
-import edu.wpi.first.math.system.plant.LinearSystemId;
-import edu.wpi.first.wpilibj.simulation.LinearSystemSim;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.wpilibj.simulation.RoboRioSim;
+import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import edu.wpi.first.wpilibj.smartdashboard.Mechanism2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismLigament2d;
 import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
@@ -33,106 +31,112 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SimArm extends IArm {
     
-    private final LinearSystemSim<N2, N1, N1> armSim;
-    private final LinearSystemSim<N2, N1, N1> wristSim;
+    private final SingleJointedArmSim armSim;
+    private final SingleJointedArmSim wristSim;
 
-    private final MechanismLigament2d armLigament;
-    // private final MechanismLigament2d wristLigament;
+    private MechanismLigament2d armLigament;
+    private MechanismLigament2d wristLigament;
 
-    private final Controller controller1; 
-    private final Controller controller2;
+    private final Mechanism2d arm;
 
-    private final SmartNumber targetAngle1;
-    private final SmartNumber targetAngle2;
+    private final Controller armController; 
+    private final Controller wristController;
 
-    public SimArm() {
+    private final SmartNumber armTargetAngle;
+    private final SmartNumber wristTargetAngle;
+
+    public SimArm() { 
         setSubsystem("SimArm");
         
         // simulation
-        armSim = new LinearSystemSim<>(LinearSystemId.identifyPositionSystem(Settings.Arm.ArmArm.Feedforward.kV, Settings.Arm.ArmArm.Feedforward.kA));
-        wristSim = new LinearSystemSim<>(LinearSystemId.identifyPositionSystem(Settings.Arm.Wrist.Feedforward.kV, Settings.Arm.Wrist.Feedforward.kA));
-
+        armSim = new SingleJointedArmSim(DCMotor.getNEO(1), ArmArm.GEARING, ArmArm.JKG, ArmArm.LENGTH, ArmArm.MINANGLE, ArmArm.MAXANGLE, ArmArm.MASS, true);
+        wristSim = new SingleJointedArmSim(DCMotor.getNEO(1), Wrist.GEARING, Wrist.JKG, Wrist.LENGTH, Wrist.MINANGLE, Wrist.MAXANGLE, Wrist.MASS, true);
+    
+        
         //controller initialization
-        controller1 = new Feedforward.Elevator(Settings.Arm.ArmArm.Feedforward.kG,Settings.Arm.ArmArm.Feedforward.kS, Settings.Arm.ArmArm.Feedforward.kA,Settings.Arm.ArmArm.Feedforward.kV).position()
+        armController = new Feedforward.Elevator(Settings.Arm.ArmArm.Feedforward.kG,Settings.Arm.ArmArm.Feedforward.kS, Settings.Arm.ArmArm.Feedforward.kA,Settings.Arm.ArmArm.Feedforward.kV).position()
             .add(new PIDController(Settings.Arm.ArmArm.PID.kP, Settings.Arm.ArmArm.PID.kI, Settings.Arm.ArmArm.PID.kD))
-            .setSetpointFilter(new MotionProfile(Settings.Arm.VEL_LIMIT, Settings.Arm.ACCEL_LIMIT));
+            .setSetpointFilter(new MotionProfile(ArmArm.VEL_LIMIT, ArmArm.ACCEL_LIMIT));
+        //reminder to change FeedForward to Arm
         
-        
-        controller2 = new Feedforward.Elevator(Settings.Arm.Wrist.Feedforward.kG,Settings.Arm.Wrist.Feedforward.kS, Settings.Arm.Wrist.Feedforward.kA,Settings.Arm.Wrist.Feedforward.kV).position()
+        wristController = new Feedforward.Elevator(Settings.Arm.Wrist.Feedforward.kG,Settings.Arm.Wrist.Feedforward.kS, Settings.Arm.Wrist.Feedforward.kA,Settings.Arm.Wrist.Feedforward.kV).position()
             .add(new PIDController(Settings.Arm.Wrist.PID.kP, Settings.Arm.Wrist.PID.kI, Settings.Arm.Wrist.PID.kD))
-            .setSetpointFilter(new MotionProfile(Settings.Arm.VEL_LIMIT, Settings.Arm.ACCEL_LIMIT));
+            .setSetpointFilter(new MotionProfile(ArmArm.VEL_LIMIT, ArmArm.ACCEL_LIMIT));
         
 
         // ligament initialization
-        Mechanism2d arm = new Mechanism2d(2, 2);
+        arm = new Mechanism2d(2, 2);
         MechanismRoot2d armRoot = arm.getRoot("Arm Root", 1 , 1);
-        armLigament = armRoot.append(new MechanismLigament2d("Arm Arm", 1, 1));
+        wristLigament = new MechanismLigament2d("Wrist", 1, getWristAngleDegrees());
+        armLigament = new MechanismLigament2d("Arm", 1, getArmAngleDegrees());
+        armRoot.append(armLigament);
 
-        addChild("Arm Mechanism2d", arm);
+        // addChild("Arm Mechanism2d", arm);
 
         // Mechanism2d wrist = armLigament.append(new MechanismLigament2d("Wrist Arm", 1, 1));
         // armLigament.append(wrist);
         // addChild("Wrist Mechanism2d", wrist);
 
         // SmartNumber initialization
-        targetAngle1 = new SmartNumber("Arm/Target Angle 1", 0);
-        targetAngle2 = new SmartNumber("Arm/Target Angle 2", 0);
+        armTargetAngle = new SmartNumber("Arm/Target Arm Angle", 0);
+        wristTargetAngle = new SmartNumber("Arm/Target Wrist Angle", 0);
+
+        SmartDashboard.putData("Arm Mech2d", arm);
+
     }
     
-    public double getTargetAngle1() {
-        return targetAngle1.get();
+    public double getTargetArmAngle() {
+        return armTargetAngle.get();
     }
 
-    public double getTargetAngle2() {
-        return targetAngle2.get();
+    public double getTargetWristAngle() {
+        return wristTargetAngle.get();
     }
 
 
-    public double getAngle1() {
-        return armSim.getOutput(0);
+    public double getArmAngleDegrees() {
+        return Math.toDegrees(armSim.getOutput(0));
     }
 
     
-    public double getAngle2() {
-        return wristSim.getOutput(0);
+    public double getWristAngleDegrees() {
+        return Math.toDegrees(wristSim.getOutput(0));
     }
 
-    public void setTargetAngle1(double angle) {
-        targetAngle1.set(angle);
+    public void setTargetArmAngle(double angle) {
+        armTargetAngle.set(angle);
     }
 
-    public void setTargetAngle2(double angle) {
-        targetAngle2.set(angle);
-    }
-
-    public void moveArm(double speed) {   
-        armSim.setInput(SLMath.clamp(speed, -1, +1) * 12);
-    }
-
-    public void moveWrist(double speed) {
-        wristSim.setInput(SLMath.clamp(speed, -1, +1) * 12);
+    public void setTargetWristAngle(double angle) {
+        wristTargetAngle.set(angle);
     }
 
     @Override
     public void periodic() {
-        controller1.update(getTargetAngle1(), getAngle1());
-        controller2.update(getTargetAngle2(), getAngle2());
         
-        armSim.setInput(MathUtil.clamp(
-            controller1.update(getTargetAngle1(), getAngle1()),
-            -RoboRioSim.getVInVoltage(),
-            +RoboRioSim.getVInVoltage()));
+        // armSim.setInput(MathUtil.clamp(
+        //     armController.update(getTargetArmAngle(), getArmAngle()),
+        //     -RoboRioSim.getVInVoltage(),
+        //     +RoboRioSim.getVInVoltage()));
 
-        wristSim.setInput(MathUtil.clamp(
-            controller2.update(getTargetAngle2(), getAngle2()),
-            -RoboRioSim.getVInVoltage(),
-            +RoboRioSim.getVInVoltage()));
+        // wristSim.setInput(MathUtil.clamp(
+        //     wristController.update(getTargetWristAngle(), getWristAngle()),
+        //     -RoboRioSim.getVInVoltage(),
+        //     +RoboRioSim.getVInVoltage()));
+    MechanismRoot2d wristRoot = arm.getRoot("Wrist Root", 1 + Math.cos(getArmAngleDegrees()),  
+        1 + Math.sin(getArmAngleDegrees()));
+        wristLigament = new MechanismLigament2d("Wrist", 1, getWristAngleDegrees());
+        wristRoot.append(wristLigament);
 
-        armLigament.setAngle(getAngle1() + 90);
+        armSim.setInput(0);
 
-        SmartDashboard.putNumber("Arm Angle", getAngle1());
-        SmartDashboard.putNumber("Wrist Angle", getAngle2());
-        SmartDashboard.putNumber("Arm Voltage", controller1.getOutput());
-        SmartDashboard.putNumber("Wrist Voltage", controller2.getOutput());
+        armSim.update(0.02);
+
+        armLigament.setAngle(getArmAngleDegrees());
+
+        SmartDashboard.putNumber("Arm Angle", getArmAngleDegrees());
+        SmartDashboard.putNumber("Wrist Angle", getWristAngleDegrees());
+        SmartDashboard.putNumber("Arm Voltage", armController.getOutput());
+        SmartDashboard.putNumber("Wrist Voltage", wristController.getOutput());
     }
 }
