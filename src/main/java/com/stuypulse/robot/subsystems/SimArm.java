@@ -37,6 +37,9 @@ public class SimArm extends IArm {
     private MechanismLigament2d armLigament;
     private MechanismLigament2d wristLigament;
 
+    private MechanismRoot2d armRoot;
+    private MechanismRoot2d wristRoot;
+
     private final Mechanism2d arm;
 
     private final Controller armController; 
@@ -49,7 +52,7 @@ public class SimArm extends IArm {
         setSubsystem("SimArm");
         
         // simulation
-        armSim = new SingleJointedArmSim(DCMotor.getNEO(1), ArmArm.GEARING, ArmArm.JKG, ArmArm.LENGTH, ArmArm.MINANGLE, ArmArm.MAXANGLE, ArmArm.MASS, true);
+        armSim = new SingleJointedArmSim(DCMotor.getNEO(1), ArmArm.GEARING, ArmArm.JKG+Wrist.JKG, ArmArm.LENGTH, ArmArm.MINANGLE, ArmArm.MAXANGLE, ArmArm.MASS, true);
         wristSim = new SingleJointedArmSim(DCMotor.getNEO(1), Wrist.GEARING, Wrist.JKG, Wrist.LENGTH, Wrist.MINANGLE, Wrist.MAXANGLE, Wrist.MASS, true);
     
         
@@ -65,11 +68,15 @@ public class SimArm extends IArm {
         
 
         // ligament initialization
-        arm = new Mechanism2d(2, 2);
-        MechanismRoot2d armRoot = arm.getRoot("Arm Root", 1 , 1);
-        wristLigament = new MechanismLigament2d("Wrist", 1, getWristAngleDegrees());
+        arm = new Mechanism2d(4, 4);
+        armRoot = arm.getRoot("Arm Root", 2 , 2);
+        wristRoot = arm.getRoot("Wrist Root", 2, 2);
+       
+
+        wristLigament = new MechanismLigament2d("Wrist", 0.5, getWristAngleDegrees());
         armLigament = new MechanismLigament2d("Arm", 1, getArmAngleDegrees());
         armRoot.append(armLigament);
+        wristRoot.append(wristLigament);
 
         // addChild("Arm Mechanism2d", arm);
 
@@ -123,16 +130,22 @@ public class SimArm extends IArm {
         //     wristController.update(getTargetWristAngle(), getWristAngle()),
         //     -RoboRioSim.getVInVoltage(),
         //     +RoboRioSim.getVInVoltage()));
-    MechanismRoot2d wristRoot = arm.getRoot("Wrist Root", 1 + Math.cos(getArmAngleDegrees()),  
-        1 + Math.sin(getArmAngleDegrees()));
-        wristLigament = new MechanismLigament2d("Wrist", 1, getWristAngleDegrees());
-        wristRoot.append(wristLigament);
 
-        armSim.setInput(0);
 
         armSim.update(0.02);
+        wristSim.update(0.02);
+
+        wristRoot.setPosition(2 + Math.cos(Math.toRadians(getArmAngleDegrees())),  
+        2 + Math.sin(Math.toRadians(getArmAngleDegrees())));
+        
+
+        armSim.setInput(6);
+        wristSim.setInput(6);
+
 
         armLigament.setAngle(getArmAngleDegrees());
+        wristLigament.setAngle(getWristAngleDegrees());
+
 
         SmartDashboard.putNumber("Arm Angle", getArmAngleDegrees());
         SmartDashboard.putNumber("Wrist Angle", getWristAngleDegrees());

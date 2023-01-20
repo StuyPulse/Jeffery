@@ -17,8 +17,8 @@ public interface Settings {
     public interface Arm {
         
         public interface ArmArm {
-            double GEARING = 20;
-            double WEIGHT = 15;
+            double GEARING = 80;
+            double WEIGHT = 7;
             double LENGTH = 0.8; // meters
             double MAXANGLE = 90; 
             double MINANGLE = -90;
@@ -48,16 +48,16 @@ public interface Settings {
 
         public interface Wrist {
             
-            double GEARING = 20;
-            double WEIGHT = 15;
-            double LENGTH = 0.8; // meters
+            double GEARING = 80;
+            double WEIGHT = 5;
+            double LENGTH = 0.3; // meters
             double MAXANGLE = 90; 
             double MINANGLE = -90;
-            double MASS = 15; // micrograms
-            double JKG = 9;
+            double MASS = 3; // micrograms
+            double JKG = 15;
 
-            double VEL_LIMIT = 5;
-            double ACCEL_LIMIT = 3;
+            double VEL_LIMIT = 4;
+            double ACCEL_LIMIT = 2;
 
             double MIDGOAL = 0.5; // meters
             double HIGHGOAL = 0.5; // meters
