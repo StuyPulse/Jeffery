@@ -114,11 +114,12 @@ public class SimArm extends IArm {
     }
 
     public void setTargetShoulderAngle(double angle) {
-        shoulderTargetAngle.set(angle);
+        shoulderTargetAngle.set(MathUtil.clamp(angle, Math.toDegrees(Shoulder.MINANGLE), Math.toDegrees(Shoulder.MAXANGLE)));
+        
     }
 
     public void setTargetWristAngle(double angle) {
-        wristTargetAngle.set(angle);
+        wristTargetAngle.set(MathUtil.clamp(angle, Math.toDegrees(Wrist.MINANGLE), Math.toDegrees(Wrist.MAXANGLE)));
     }
 
     @Override

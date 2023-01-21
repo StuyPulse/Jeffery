@@ -16,7 +16,7 @@ public class DoubleJointedArmSim extends SubsystemBase{
         double wristArmLengthMeters, double wristMinAngleRads, double wristMaxAngleRads,
         double wristArmMass) {
 
-        shoulderSim = new SingleJointedArmSim(shoulderDCMotorGearbox, shoulderGearing, shoulderMomentOfInertia, shoulderArmLengthMeters, shoulderMinAngleRads, shoulderMaxAngleRads, shoulderArmMass, true);
+        shoulderSim = new SingleJointedArmSim(shoulderDCMotorGearbox, shoulderGearing, shoulderMomentOfInertia + wristMomentOfIntertia, shoulderArmLengthMeters + wristArmLengthMeters, shoulderMinAngleRads, shoulderMaxAngleRads, shoulderArmMass+wristArmMass, true);
         wristSim = new SingleJointedArmSim(wristDCMotorGearbox, wristGearing, wristMomentOfIntertia, wristArmLengthMeters, wristMinAngleRads, wristMaxAngleRads, wristArmMass, true);
     }
 
@@ -28,17 +28,10 @@ public class DoubleJointedArmSim extends SubsystemBase{
     public double getShoulderAngleDegrees() {
         return Math.toDegrees(shoulderSim.getOutput(0));
     }
-        
+    
+    // this is world relative
     public double getWristAngleDegrees() {
         return Math.toDegrees(wristSim.getOutput(0));
-    }
-
-    public double getShoulderAngleRadians() {
-        return shoulderSim.getOutput(0);
-    }
-
-    public double getWristAngleRadians() {
-        return wristSim.getOutput(0);
     }
 
     public void setInput(double shoulderVoltage, double wristVoltage) {
@@ -49,14 +42,6 @@ public class DoubleJointedArmSim extends SubsystemBase{
     public void update(double dtSeconds) {
         shoulderSim.update(dtSeconds);
         wristSim.update(dtSeconds);
-    }
-
-    /**
-     * Less Used Methods Below
-     */
-
-    public static double estimateMOI(double lengthMeters, double massKg) {
-        return 1.0 / 3.0 * massKg * lengthMeters * lengthMeters;
     }
     
 }

@@ -7,17 +7,17 @@ import com.stuypulse.robot.subsystems.SimArm;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 import edu.wpi.first.wpilibj2.command.InstantCommand;
 
-public class MoveToHigh extends InstantCommand {
+public class Holding extends InstantCommand {
     public final IArm arm;
 
-    public MoveToHigh(IArm arm) {
+    public Holding(IArm arm) {
         this.arm = arm;
         addRequirements(arm);
 
     }
 
     public void initialize() {
-        arm.setTargetShoulderAngle(-20);
-        arm.setTargetWristAngle(20);
+        arm.setTargetShoulderAngle(-40);
+        arm.setTargetWristAngle(100);
     }
 }

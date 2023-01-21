@@ -20,8 +20,8 @@ public interface Settings {
         public interface Shoulder {
             double GEARING = 80;
             double LENGTH = 0.8; // meters
-            double MAXANGLE = 90; 
-            double MINANGLE = -90;
+            double MAXANGLE = Math.PI/6; 
+            double MINANGLE = (-7 * Math.PI)/6;
             double MASS = 7; 
             double WEIGHT = MASS * 9.81; 
             double JKG = 0.33 * MASS * (Math.pow(LENGTH, 2));
