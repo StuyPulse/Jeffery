@@ -29,11 +29,10 @@ import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.SPI;
 
-public class SwerveDrive extends SubsystemBase {
+public class SwerveDrive extends ISwerve {
 
     private static SwerveDrive instance = null;
 
@@ -184,7 +183,7 @@ public class SwerveDrive extends SubsystemBase {
         }
     }
 
-    private void setStatesRetainAngle(ChassisSpeeds robotSpeed) {
+    protected void setStatesRetainAngle(ChassisSpeeds robotSpeed) {
         var moduleStates = kinematics.toSwerveModuleStates(robotSpeed);
         SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, Chassis.MAX_SPEED);
         for (int i = 0; i < modules.length; ++i) {
@@ -244,7 +243,7 @@ public class SwerveDrive extends SubsystemBase {
 
     /** ODOMETRY API */
 
-    private void updatePose() {
+    protected void updatePose() {
         poseEstimator.update(getGyroAngle(), getModulePositions());
         // ICamera camera = ICamera.getInstance();
         // if (camera.hasTarget()) {

@@ -11,6 +11,7 @@ import com.stuypulse.robot.constants.Settings.Swerve.FrontRight;
 import com.stuypulse.robot.constants.Settings.Swerve.BackLeft;
 import com.stuypulse.robot.constants.Settings.Swerve.BackRight;
 import com.stuypulse.robot.constants.Settings.Swerve.Chassis;
+import com.stuypulse.robot.subsystems.ISwerve;
 import com.stuypulse.robot.subsystems.modules.SL_SimModule;
 import com.stuypulse.robot.subsystems.modules.SL_SwerveModule;
 import com.stuypulse.robot.subsystems.modules.SwerveModule;
@@ -26,18 +27,17 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.SPI;
 
-public class SwerveDrive extends SubsystemBase {
+public class OldSwerve extends ISwerve {
 
-    private static SwerveDrive instance = null;
+    private static OldSwerve instance = null;
 
-    public static SwerveDrive getInstance() {
+    public static OldSwerve getInstance() {
         if (instance == null) {
             if (RobotBase.isReal()) {
-                instance = new SwerveDrive(new SwerveModule[] {
+                instance = new OldSwerve(new SwerveModule[] {
                     new SL_SwerveModule(FrontRight.ID, FrontRight.MODULE_OFFSET, Ports.Swerve.FrontRight.TURN, Ports.Swerve.FrontRight.ENCODER, FrontRight.ABSOLUTE_OFFSET, Ports.Swerve.FrontRight.DRIVE),
                     new SL_SwerveModule(FrontLeft.ID, FrontLeft.MODULE_OFFSET, Ports.Swerve.FrontLeft.TURN, Ports.Swerve.FrontLeft.ENCODER, FrontLeft.ABSOLUTE_OFFSET, Ports.Swerve.FrontLeft.DRIVE),
                     new SL_SwerveModule(BackLeft.ID, BackLeft.MODULE_OFFSET, Ports.Swerve.BackLeft.TURN, Ports.Swerve.BackLeft.ENCODER, BackLeft.ABSOLUTE_OFFSET, Ports.Swerve.BackLeft.DRIVE),
@@ -51,7 +51,7 @@ public class SwerveDrive extends SubsystemBase {
                 //     new SparkMax_Module(BackRight.ID, BackRight.MODULE_OFFSET, Ports.Swerve.BackRight.TURN, Ports.Swerve.BackRight.ENCODER, BackRight.ABSOLUTE_OFFSET.getRotation2d(), Ports.Swerve.BackRight.DRIVE)
                 // });
             } else {
-                instance = new SwerveDrive(new SwerveModule[] {
+                instance = new OldSwerve(new SwerveModule[] {
                     new SL_SimModule(FrontRight.ID, FrontRight.MODULE_OFFSET),
                     new SL_SimModule(FrontLeft.ID, FrontLeft.MODULE_OFFSET),
                     new SL_SimModule(BackLeft.ID, BackLeft.MODULE_OFFSET),
@@ -77,7 +77,7 @@ public class SwerveDrive extends SubsystemBase {
     private final FieldObject2d[] module2ds;
 
 
-    public SwerveDrive(SwerveModule[] modules) {
+    public OldSwerve(SwerveModule[] modules) {
         this.modules = modules;
 
         gyro = new AHRS(SPI.Port.kMXP);
@@ -180,7 +180,7 @@ public class SwerveDrive extends SubsystemBase {
         }
     }
 
-    private void setStatesRetainAngle(ChassisSpeeds robotSpeed) {
+    protected void setStatesRetainAngle(ChassisSpeeds robotSpeed) {
         var moduleStates = kinematics.toSwerveModuleStates(robotSpeed);
         SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, Chassis.MAX_SPEED);
         for (int i = 0; i < modules.length; ++i) {
@@ -225,7 +225,7 @@ public class SwerveDrive extends SubsystemBase {
 
     /** ODOMETRY API */
 
-    private void updatePose() {
+    protected void updatePose() {
         odometry.update(getGyroAngle(), getModulePositions());
     }
 
