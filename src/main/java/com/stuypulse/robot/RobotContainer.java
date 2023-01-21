@@ -22,7 +22,9 @@ import com.stuypulse.robot.commands.SwerveDriveToPose;
 import com.stuypulse.robot.commands.SwerveDriveToPoseMP;
 import com.stuypulse.robot.commands.auton.DoNothingAuton;
 import com.stuypulse.robot.commands.swerve.BasicGyroEngage;
+import com.stuypulse.robot.commands.swerve.ChargeDrive;
 import com.stuypulse.robot.commands.swerve.GyroAutoEngage;
+import com.stuypulse.robot.commands.swerve.LockWheels;
 import com.stuypulse.robot.commands.swerve.SwerveDriveDrive;
 import com.stuypulse.robot.commands.swerve.SwerveDriveHome;
 import com.stuypulse.robot.constants.Ports;
@@ -88,6 +90,12 @@ public class RobotContainer {
                         // () -> drivetrain.setPose(new Pose2d(5.68, -3.36, new Rotation2d(Math.toRadians(10)))),
                         () -> swerve.reset(Settings.STARTING_POSE))
                         );
+        driver.getBottomButton()
+            .whileTrue(new ChargeDrive(swerve, driver));
+        
+        driver.getLeftBumper()
+            .whileTrue(new LockWheels(swerve));
+              
 
         // driver.getBottomButton().onTrue(new DrivetrainAlignCommand(drivetrain, camera, Alignment.TARGET_POSE));
 
