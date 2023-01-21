@@ -8,6 +8,11 @@ package com.stuypulse.robot;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.stuypulse.robot.commands.auton.DoNothingAuton;
 import com.stuypulse.robot.commands.auton.MobilityAuton;
+import com.stuypulse.robot.commands.auton.OnePiece;
+import com.stuypulse.robot.commands.auton.OnePieceDock;
+import com.stuypulse.robot.commands.auton.ThreePiece;
+import com.stuypulse.robot.commands.auton.ThreePieceDock;
+import com.stuypulse.robot.commands.auton.TwoPieceDock;
 import com.stuypulse.robot.commands.drivetrain.DrivetrainDriveCommand;
 import com.stuypulse.robot.commands.drivetrain.DrivetrainRamseteCommand;
 import com.stuypulse.robot.commands.drivetrain.DrivetrainAlignCommand;
@@ -116,6 +121,11 @@ public class RobotContainer {
     public void configureAutons() {
         autonChooser.setDefaultOption("Do Nothing", new DoNothingAuton());
         autonChooser.addOption("Mobility", new MobilityAuton(this));
+        autonChooser.addOption("1 Piece + Dock", new OnePieceDock(this));
+        autonChooser.addOption("2 Piece + Dock", new TwoPieceDock(this));
+        autonChooser.addOption("3 Piece + Dock", new ThreePieceDock(this));
+        autonChooser.addOption("1 Piece", new OnePiece(this));
+        autonChooser.addOption("3 Piece", new ThreePiece(this));
 
         SmartDashboard.putData("Autonomous", autonChooser);
     }
