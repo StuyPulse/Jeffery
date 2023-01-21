@@ -1,13 +1,13 @@
 package com.stuypulse.robot.subsystems;
 
 import com.stuypulse.robot.constants.Settings;
-import com.stuypulse.robot.constants.Settings.Arm.*;
+import com.stuypulse.robot.constants.Settings.Arm.Shoulder;
+import com.stuypulse.robot.constants.Settings.Arm.Wrist;
+import com.stuypulse.robot.util.DoubleJointedArmSim;
 import com.stuypulse.stuylib.control.Controller;
 import com.stuypulse.stuylib.control.feedback.PIDController;
 import com.stuypulse.stuylib.control.feedforward.Feedforward;
-import com.stuypulse.stuylib.math.SLMath;
 import com.stuypulse.stuylib.network.SmartNumber;
-import com.stuypulse.stuylib.streams.filters.MotionProfile;
 
 import edu.wpi.first.math.MathUtil;
 import edu.wpi.first.math.system.plant.DCMotor;
@@ -31,9 +31,8 @@ import edu.wpi.first.wpilibj.util.Color8Bit;
 */
 
 public class SimArm extends IArm {
-    
-    private final SingleJointedArmSim shoulderSim;
-    private final SingleJointedArmSim wristSim;
+
+    private final DoubleJointedArmSim armSim;
     
     private MechanismLigament2d baseLigament;
     private MechanismLigament2d shoulderLigament;
@@ -54,8 +53,8 @@ public class SimArm extends IArm {
         setSubsystem("SimArm");
         
         // simulation
-        shoulderSim = new SingleJointedArmSim(DCMotor.getNEO(1), Shoulder.GEARING, Shoulder.JKG+Wrist.JKG, Shoulder.LENGTH, Shoulder.MINANGLE, Shoulder.MAXANGLE, Shoulder.MASS, true);
-        wristSim = new SingleJointedArmSim(DCMotor.getNEO(1), Wrist.GEARING, Wrist.JKG, Wrist.LENGTH, Wrist.MINANGLE, Wrist.MAXANGLE, Wrist.MASS, true);
+        armSim = new DoubleJointedArmSim(new SingleJointedArmSim(DCMotor.getNEO(1), Shoulder.GEARING, Shoulder.JKG+Wrist.JKG, Shoulder.LENGTH, Shoulder.MINANGLE, Shoulder.MAXANGLE, Shoulder.MASS, true), 
+            new SingleJointedArmSim(DCMotor.getNEO(1), Wrist.GEARING, Wrist.JKG, Wrist.LENGTH, Wrist.MINANGLE, Wrist.MAXANGLE, Wrist.MASS, true));
     
         
         //controller initialization
@@ -106,12 +105,12 @@ public class SimArm extends IArm {
 
 
     public double getShoulderAngleDegrees() {
-        return Math.toDegrees(shoulderSim.getOutput(0));
+        return armSim.getShoulderAngleDegrees();
     }
 
     
     public double getWristAngleDegrees() {
-        return Math.toDegrees(wristSim.getOutput(0));
+        return armSim.getWristAngleDegrees();
     }
 
     public void setTargetShoulderAngle(double angle) {
@@ -123,15 +122,10 @@ public class SimArm extends IArm {
     }
 
     @Override
-    public void periodic() {
-        
-        shoulderSim.setInput(shoulderController.update(getTargetShoulderAngle(), getShoulderAngleDegrees()));
+    public void periodic() {        
+        armSim.setInput(shoulderController.update(getTargetShoulderAngle(), getShoulderAngleDegrees()), wristController.update(getTargetWristAngle(), getWristAngleDegrees()));
 
-        
-        wristSim.setInput(wristController.update(getTargetWristAngle(), getWristAngleDegrees()));
-
-        shoulderSim.update(0.02);
-        wristSim.update(0.02);
+        armSim.update(0.02);
 
         wristRoot.setPosition(2 + Math.cos(Math.toRadians(getShoulderAngleDegrees())),  
         2 + Math.sin(Math.toRadians(getShoulderAngleDegrees())));

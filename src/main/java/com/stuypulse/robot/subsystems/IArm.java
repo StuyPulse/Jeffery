@@ -21,20 +21,20 @@ public abstract class IArm extends SubsystemBase {
 
     public abstract void setTargetWristAngle(double angle);
 
-    public void addTargetAngle1(double addedheight) {
-        setTargetShoulderAngle(getTargetShoulderAngle() + addedheight);
+    public void moveShoulder(double angle) {
+        setTargetShoulderAngle(getTargetShoulderAngle() + angle);
     }
     
-    public void addTargetAngle2(double addedheight) {
-        setTargetWristAngle(getTargetWristAngle() + addedheight);
+    public void moveWrist(double angle) {
+        setTargetWristAngle(getTargetWristAngle() + angle);
     }
 
-    public boolean jointOneAtAngle(double maxerror) {
-        return Math.abs(getShoulderAngleDegrees() - getTargetShoulderAngle()) < maxerror;
+    public boolean isShoulderAtAngle(double maxError) {
+        return Math.abs(getShoulderAngleDegrees() - getTargetShoulderAngle()) < maxError;
     }
 
-    public boolean jointTwoAtAngle(double maxerror) {
-        return Math.abs(getWristAngleDegrees() - getTargetWristAngle()) < maxerror;
+    public boolean isWristAtAngle(double maxError) {
+        return Math.abs(getWristAngleDegrees() - getTargetWristAngle()) < maxError;
     }
 
 }

@@ -19,9 +19,7 @@ import edu.wpi.first.wpilibj2.command.Command;
 public class RobotContainer {
 
     // Gamepads
-    public final Gamepad driver = new AutoGamepad(Ports.Gamepad.DRIVER);
-    public final Gamepad operator = new AutoGamepad(Ports.Gamepad.OPERATOR);
-    
+    public final Gamepad driver = new AutoGamepad(Ports.Gamepad.DRIVER);    
     // Subsystem
 
     public final IArm arm  = new SimArm();
@@ -46,7 +44,9 @@ public class RobotContainer {
     /*** BUTTONS ***/
     /***************/
 
-    private void configureButtonBindings() {}
+    private void configureButtonBindings() {
+        
+    }
 
     /**************/
     /*** AUTONS ***/

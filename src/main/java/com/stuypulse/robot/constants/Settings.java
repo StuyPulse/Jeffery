@@ -33,9 +33,9 @@ public interface Settings {
             double HIGHGOAL = 0.5; // meters
 
             public interface PID {
-                SmartNumber kP = new SmartNumber("kP", 1);
-                SmartNumber kI = new SmartNumber ("kI", 0);
-                SmartNumber kD = new SmartNumber("kD", 0.1);
+                SmartNumber kP = new SmartNumber("Shoulder/kP", 1);
+                SmartNumber kI = new SmartNumber ("Shoulder/kI", 0);
+                SmartNumber kD = new SmartNumber("Shoulder/kD", 0.1);
             }
         
 
@@ -64,15 +64,15 @@ public interface Settings {
             double HIGHGOAL = 0.5; // meters
         
             public interface PID {
-                SmartNumber kP = new SmartNumber("kP", 1);
-                SmartNumber kI = new SmartNumber ("kI", 0);
-                SmartNumber kD = new SmartNumber("kD", 0.1);
+                SmartNumber kP = new SmartNumber("Wrist/kP", 0.6);
+                SmartNumber kI = new SmartNumber ("Wrist/kI", 0);
+                SmartNumber kD = new SmartNumber("Wrist/kD", 0);
             }
 
             public interface Feedforward {
                 double kS = 0.1;
                 double kA = 0.05;
-                double kG = 0.67;
+                double kG = 0.7;
                 double kV = 0.1;
             }
         }        
