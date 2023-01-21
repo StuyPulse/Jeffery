@@ -5,6 +5,7 @@ import com.stuypulse.robot.util.Pitch;
 import com.stuypulse.stuylib.control.Controller;
 import com.stuypulse.stuylib.control.feedback.PIDController;
 import com.stuypulse.stuylib.network.SmartNumber;
+import com.stuypulse.stuylib.network.SmartString;
 import com.stuypulse.stuylib.streams.IStream;
 
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -21,8 +22,8 @@ public class BasicGyroEngage extends CommandBase {
     public BasicGyroEngage(SwerveDrive swerve) {
         this.swerve = swerve;
 
-        MAX_TILT = new SmartNumber("Engage/Max Tilt (deg)", 15.0);
-        MAX_ENGAGE_SPEED = new SmartNumber("Engage/Max Engage Speed (m per s)", 0.25);
+        MAX_TILT = new SmartNumber("Auto Engage/Max Tilt (deg)", 15.0);
+        MAX_ENGAGE_SPEED = new SmartNumber("Auto Engage/Max Engage Speed (m per s)", 0.25);
 
         control = new PIDController(IStream.create(() -> MAX_ENGAGE_SPEED.get() / MAX_TILT.get()).number(), 0, 0);
     }

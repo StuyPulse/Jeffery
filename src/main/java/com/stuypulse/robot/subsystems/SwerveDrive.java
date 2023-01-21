@@ -224,7 +224,7 @@ public class SwerveDrive extends SubsystemBase {
     }
 
     public void stop() {
-        setStates(new ChassisSpeeds(0,0,0), false);
+        setStates(new ChassisSpeeds(), true);
     }
 
     public void setStates(SwerveModuleState... states) {
