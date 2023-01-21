@@ -17,7 +17,7 @@ import com.stuypulse.stuylib.network.SmartNumber;
 public interface Settings {
     public interface Arm {
         
-        public interface ArmArm {
+        public interface Shoulder {
             double GEARING = 80;
             double LENGTH = 0.8; // meters
             double MAXANGLE = 90; 
@@ -64,16 +64,16 @@ public interface Settings {
             double HIGHGOAL = 0.5; // meters
         
             public interface PID {
-                SmartNumber kP = new SmartNumber("kP", 0.5);
-                SmartNumber kI = new SmartNumber ("kI", 0.5);
-                SmartNumber kD = new SmartNumber("kD", 0.5);
+                SmartNumber kP = new SmartNumber("kP", 1);
+                SmartNumber kI = new SmartNumber ("kI", 0);
+                SmartNumber kD = new SmartNumber("kD", 0.1);
             }
 
             public interface Feedforward {
-                double kS = 0.5;
-                double kA = 0.5;
-                double kG = 0.5;
-                double kV = 0.5;
+                double kS = 0.1;
+                double kA = 0.05;
+                double kG = 0.67;
+                double kV = 0.1;
             }
         }        
     }

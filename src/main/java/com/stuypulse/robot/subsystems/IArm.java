@@ -5,26 +5,24 @@ import edu.wpi.first.wpilibj2.command.SubsystemBase;
 
 public abstract class IArm extends SubsystemBase {
 
-    
     public static IArm getInstance() {
         return RobotBase.isReal() ?  new SimArm() : new SimArm();
     }
     
-
-    public abstract double getTargetArmAngle();
+    public abstract double getTargetShoulderAngle();
 
     public abstract double getTargetWristAngle();
 
-    public abstract double getArmAngleDegrees();
+    public abstract double getShoulderAngleDegrees();
 
     public abstract double getWristAngleDegrees();
 
-    public abstract void setTargetArmAngle(double angle);
+    public abstract void setTargetShoulderAngle(double angle);
 
     public abstract void setTargetWristAngle(double angle);
 
     public void addTargetAngle1(double addedheight) {
-        setTargetArmAngle(getTargetArmAngle() + addedheight);
+        setTargetShoulderAngle(getTargetShoulderAngle() + addedheight);
     }
     
     public void addTargetAngle2(double addedheight) {
@@ -32,7 +30,7 @@ public abstract class IArm extends SubsystemBase {
     }
 
     public boolean jointOneAtAngle(double maxerror) {
-        return Math.abs(getArmAngleDegrees() - getTargetArmAngle()) < maxerror;
+        return Math.abs(getShoulderAngleDegrees() - getTargetShoulderAngle()) < maxerror;
     }
 
     public boolean jointTwoAtAngle(double maxerror) {
