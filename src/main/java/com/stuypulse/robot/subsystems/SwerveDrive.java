@@ -4,11 +4,13 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.stuypulse.robot.constants.Field;
 import com.stuypulse.robot.constants.Ports;
 import com.stuypulse.robot.constants.Settings;
 import com.stuypulse.robot.constants.Motors.Swerve;
 import com.stuypulse.robot.constants.Settings.Swerve.FrontLeft;
 import com.stuypulse.robot.constants.Settings.Swerve.FrontRight;
+import com.stuypulse.robot.constants.Settings.AlignmentCommand.Translation;
 import com.stuypulse.robot.constants.Settings.Swerve.BackLeft;
 import com.stuypulse.robot.constants.Settings.Swerve.BackRight;
 import com.stuypulse.robot.constants.Settings.Swerve.Chassis;
@@ -21,6 +23,7 @@ import com.stuypulse.stuylib.math.Vector2D;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -251,8 +254,22 @@ public class SwerveDrive extends SubsystemBase {
 
         // if robot is within a certain distanace to apriltag, use apriltag pose
         LLCamera limelight = new LLCamera();
+
         if (limelight.hasTarget()) {
-            double distanceToTag = limelight.getDistance();
+
+            Translation2d robotXY;
+            Pose3d aprilTagXY;
+
+            aprilTagXY = Field.aprilTags[ (int) (limelight.getTagID() - 1)]; 
+
+            // double distanceToTag = limelight.getDistance();
+            robotXY = getTranslation();
+
+            double distanceToTag = Math.sqrt(
+                Math.pow(robotXY.getX() - aprilTagXY.getTranslation().getX(), 2) + 
+                Math.pow(robotXY.getY() - aprilTagXY.getTranslation().getY(), 2)
+            );
+
 
             //if distance to the tag is between MIN_DIST and MAX_DIST then use apriltag
             if (distanceToTag > Settings.Swerve.MIN_DIST && distanceToTag < Settings.Swerve.MAX_DIST) {

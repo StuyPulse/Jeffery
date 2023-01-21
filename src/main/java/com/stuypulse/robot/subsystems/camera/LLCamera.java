@@ -11,6 +11,7 @@ import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.net.PortForwarder;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /* todo: make ICamera, SimCamera */
@@ -66,6 +67,11 @@ public class LLCamera extends ICamera {
 		Angle txAngle = Angle.fromDegrees(txDegrees);
 		
 		return txAngle;
+	}
+
+	public long getTagID() {
+		// return Limelight.getTagID(); 
+		return NetworkTableInstance.getDefault().getTable("limelight").getIntegerTopic("tid").getEntry(-1).get();
 	}
 
 	public Angle getVerticalOffset() {
