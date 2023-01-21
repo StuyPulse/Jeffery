@@ -6,11 +6,13 @@ import java.util.stream.Stream;
 import com.kauailabs.navx.frc.AHRS;
 import com.stuypulse.robot.constants.Ports;
 import com.stuypulse.robot.constants.Settings;
+import com.stuypulse.robot.constants.Motors.Swerve;
 import com.stuypulse.robot.constants.Settings.Swerve.FrontLeft;
 import com.stuypulse.robot.constants.Settings.Swerve.FrontRight;
 import com.stuypulse.robot.constants.Settings.Swerve.BackLeft;
 import com.stuypulse.robot.constants.Settings.Swerve.BackRight;
 import com.stuypulse.robot.constants.Settings.Swerve.Chassis;
+import com.stuypulse.robot.subsystems.camera.LLCamera;
 import com.stuypulse.robot.subsystems.modules.SL_SimModule;
 import com.stuypulse.robot.subsystems.modules.SL_SwerveModule;
 import com.stuypulse.robot.subsystems.modules.SwerveModule;
@@ -91,10 +93,11 @@ public class SwerveDrive extends SubsystemBase {
                         .toArray(Translation2d[]::new));
 
         poseEstimator = new SwerveDrivePoseEstimator(kinematics, getGyroAngle(), getModulePositions(), new Pose2d());
+
         poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.01, 0.1, Units.degreesToRadians(3)));
 
         field = new Field2d();
-        module2ds = new FieldObject2d[modules.length];
+        module2ds = new FieldObject2d[modules.length]; 
         for (int i = 0; i < modules.length; ++i) {
             module2ds[i] = field.getObject(modules[i].getId()+"-2d");
         }
@@ -245,11 +248,20 @@ public class SwerveDrive extends SubsystemBase {
     /** ODOMETRY API */
 
     private void updatePose() {
-        poseEstimator.update(getGyroAngle(), getModulePositions());
-        // ICamera camera = ICamera.getInstance();
-        // if (camera.hasTarget()) {
-        //     poseEstimator.addVisionMeasurement(camera.getRobotPose(), Timer.getFPGATimestamp() - camera.getLatency());
-        // }
+
+        // if robot is within a certain distanace to apriltag, use apriltag pose
+        LLCamera limelight = new LLCamera();
+        if (limelight.hasTarget()) {
+            double distanceToTag = limelight.getDistance();
+
+            //if distance to the tag is between MIN_DIST and MAX_DIST then use apriltag
+            if (distanceToTag > Settings.Swerve.MIN_DIST && distanceToTag < Settings.Swerve.MAX_DIST) {
+
+                // reset position with apriltag pose
+                poseEstimator.resetPosition(/* maybe angle from camera as well? */ getGyroAngle(), getModulePositions(), limelight.getPose2d());
+            }
+        } else poseEstimator.update(getGyroAngle(), getModulePositions());
+
     }
 
     public Pose2d getPose() {
@@ -267,7 +279,9 @@ public class SwerveDrive extends SubsystemBase {
     // AngleVelocity anglevelocity = new AngleVelocity();
     @Override
     public void periodic() {
+
         updatePose();
+
         field.setRobotPose(getPose());
 
         var pose = getPose();
