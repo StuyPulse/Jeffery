@@ -244,6 +244,7 @@ public interface Settings {
             double WIDTH = Units.inchesToMeters(29.0);
             double HEIGHT = Units.inchesToMeters(29.0);
             double MAX_SPEED = 4.2;
+            double MAX_ACCELERATION = 1;// random number
         }
 
         public interface Drive {
@@ -334,6 +335,14 @@ public interface Settings {
             SmartNumber P = new SmartNumber("Alignment/Rotation/kP", 1);
             SmartNumber I = new SmartNumber("Alignment/Rotation/kI", 0);
             SmartNumber D = new SmartNumber("Alignment/Rotation/kD", 0);
+        }
+
+        SmartNumber debounceTime = new SmartNumber("Alignment/DeBounce time", 0.3);
+
+        public interface Aligned{
+            double ACCEPTABLE_ANGLE_ERROR = 0.1;
+            double ACCEPTABLE_DISPLACEMENT_ERROR = 0.1;
+            double DEBOUNCE_TIME = 0.3;
         }
     }
 }
