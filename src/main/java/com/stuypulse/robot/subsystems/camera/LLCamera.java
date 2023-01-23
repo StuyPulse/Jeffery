@@ -4,6 +4,7 @@ import com.stuypulse.robot.constants.Settings;
 import com.stuypulse.robot.subsystems.ICamera;
 import com.stuypulse.stuylib.math.Angle;
 import com.stuypulse.stuylib.network.limelight.Limelight;
+import com.stuypulse.stuylib.network.limelight.Limelight.Pipeline;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -14,6 +15,21 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 /* todo: make ICamera, SimCamera */
 public class LLCamera extends ICamera {
 
+	public enum AlignmentType {
+		APRIL_TAG(Pipeline.SETTING_0),
+		REFLECTIVE_TAPE(Pipeline.SETTING_1);
+
+		private final Pipeline value;
+
+		AlignmentType(Pipeline pipeline) {
+			this.value = pipeline;
+		}
+
+		public Pipeline getPipeline() {
+			return value;
+		}
+	}
+
 	private Limelight limelight;
 	
 	public LLCamera() {
@@ -23,6 +39,16 @@ public class LLCamera extends ICamera {
             PortForwarder.add(port, "limelight.local", port);
         }
         CameraServer.startAutomaticCapture();
+
+		setAlignmentType(AlignmentType.APRIL_TAG);
+	}
+
+	public void setAlignmentType(AlignmentType alignmentType){
+		limelight.setPipeline(alignmentType.value);
+	}
+
+	public double getAlignmentType() {
+		return limelight.getPipeline().getCodeValue();
 	}
 
 	public double getLatency() {
@@ -83,16 +109,16 @@ public class LLCamera extends ICamera {
 		if (!limelight.isConnected()) {
 			System.out.println("[WARNING] Limelight is disconnected.");
 		}
+		if (getAlignmentType() == Pipeline.SETTING_1.getCodeValue()) {
+			SmartDashboard.putNumber("Camera/Distance", getDistance());
+			SmartDashboard.putNumber("Camera/Angle", getHorizontalOffset().toDegrees());
+		} else {
+			Pose2d pose = getPose2d();
 
-		SmartDashboard.putNumber("Camera/Distance", getDistance());
-		SmartDashboard.putNumber("Camera/Angle", getHorizontalOffset().toDegrees());
-
-		Pose2d pose = getPose2d();
-
-		SmartDashboard.putNumber("Camera/Pose X", pose.getX());
-		SmartDashboard.putNumber("Camera/Pose Y", pose.getY());
-		SmartDashboard.putNumber("Camera/Pose Rotation", pose.getRotation().getDegrees());
-			
+			SmartDashboard.putNumber("Camera/Pose X", pose.getX());
+			SmartDashboard.putNumber("Camera/Pose Y", pose.getY());
+			SmartDashboard.putNumber("Camera/Pose Rotation", pose.getRotation().getDegrees());
+		}	
 	}
 
 }
