@@ -10,6 +10,7 @@ import com.stuypulse.robot.constants.Settings.Swerve.Motion;
 import com.stuypulse.robot.subsystems.SwerveDrive;
 
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.wpilibj.DriverStation;
 import edu.wpi.first.wpilibj2.command.Command;
 
 public class FollowTrajectory extends PPSwerveControllerCommand {
@@ -27,6 +28,7 @@ public class FollowTrajectory extends PPSwerveControllerCommand {
 			new PIDController(Motion.XY.kP, Motion.XY.kI, Motion.XY.kD),
 			new PIDController(Motion.THETA.kP, Motion.THETA.kI, Motion.THETA.kD),
 			swerve::setStates,
+			true,
 			swerve
 		);
 
@@ -45,29 +47,30 @@ public class FollowTrajectory extends PPSwerveControllerCommand {
 		return this;
 	}
 
-	// public FollowPathWithEvents withEvents(Map<String, Command> events) {
-	// 	return new FollowPathWithEvents(
-	// 		this,
-	// 		path.getMarkers(),
-	// 		new HashMap<String, Command>(events)
-	// 	);
-	// }
+	public FollowPathWithEvents withEvents(Map<String, Command> events) {
+		return new FollowPathWithEvents(
+			this,
+			path.getMarkers(),
+			new HashMap<String, Command>(events)
+		);
+	}
 
-	// public FollowPathWithEvents withEvents(HashMap<String, Command> events) {
-	// 	return new FollowPathWithEvents(
-	// 		this,
-	// 		path.getMarkers(),
-	// 		events
-	// 	);
-	// }
+	public FollowPathWithEvents withEvents(HashMap<String, Command> events) {
+		return new FollowPathWithEvents(
+			this,
+			path.getMarkers(),
+			events
+		);
+	}
 
 	@Override
 	public void initialize() {
 		if (robotRelative) {
-			swerve.reset(path.getInitialHolonomicPose());
+			swerve.reset(PathPlannerTrajectory.transformStateForAlliance(path.getInitialState(), DriverStation.getAlliance()).poseMeters);
 		}
 
 		super.initialize();
 	}
 
 }
+	

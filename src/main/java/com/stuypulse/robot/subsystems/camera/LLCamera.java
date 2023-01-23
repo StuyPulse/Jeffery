@@ -119,15 +119,16 @@ public class LLCamera extends ICamera {
 
 		SmartDashboard.putNumber("Camera/Pipeline", getAlignmentType());
 
-		SmartDashboard.putNumber("Camera/Distance", getDistance());
-		SmartDashboard.putNumber("Camera/Angle", getHorizontalOffset().toDegrees());
+		if (getAlignmentType() == Pipeline.SETTING_1.getCodeValue()) {
+			SmartDashboard.putNumber("Camera/Distance", getDistance());
+			SmartDashboard.putNumber("Camera/Angle", getHorizontalOffset().toDegrees());
+		} else {
+			Pose2d pose = getPose2d();
 
-		Pose2d pose = getPose2d();
-
-		SmartDashboard.putNumber("Camera/Pose X", pose.getX());
-		SmartDashboard.putNumber("Camera/Pose Y", pose.getY());
-		SmartDashboard.putNumber("Camera/Pose Rotation", pose.getRotation().getDegrees());
-			
+			SmartDashboard.putNumber("Camera/Pose X", pose.getX());
+			SmartDashboard.putNumber("Camera/Pose Y", pose.getY());
+			SmartDashboard.putNumber("Camera/Pose Rotation", pose.getRotation().getDegrees());
+		}	
 	}
 
 }

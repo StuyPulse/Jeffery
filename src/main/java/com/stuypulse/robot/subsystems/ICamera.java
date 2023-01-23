@@ -13,9 +13,9 @@ public abstract class ICamera extends SubsystemBase {
 
     private static ICamera instance = null;
 
-    public static ICamera getInstance(Drivetrain drivetrain) {
+    public static ICamera getInstance() {
         if (instance == null) {
-            instance = RobotBase.isReal() ? new LLCamera() : new SimCamera(drivetrain);
+            instance = RobotBase.isReal() ? new LLCamera() : new LLCamera();
         }
         return instance;
     }

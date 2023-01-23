@@ -8,6 +8,11 @@ package com.stuypulse.robot;
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.stuypulse.robot.commands.auton.DoNothingAuton;
 import com.stuypulse.robot.commands.auton.MobilityAuton;
+import com.stuypulse.robot.commands.auton.OnePiece;
+import com.stuypulse.robot.commands.auton.OnePieceDock;
+import com.stuypulse.robot.commands.auton.ThreePiece;
+import com.stuypulse.robot.commands.auton.ThreePieceDock;
+import com.stuypulse.robot.commands.auton.TwoPieceDock;
 import com.stuypulse.robot.commands.drivetrain.DrivetrainDriveCommand;
 import com.stuypulse.robot.commands.drivetrain.DrivetrainRamseteCommand;
 import com.stuypulse.robot.commands.drivetrain.DrivetrainAlignCommand;
@@ -18,12 +23,14 @@ import com.stuypulse.robot.subsystems.Drivetrain;
 import com.stuypulse.robot.subsystems.ICamera;
 import com.stuypulse.robot.subsystems.camera.LLCamera;
 import com.stuypulse.robot.subsystems.camera.PVCamera;
-import com.stuypulse.robot.subsystems.camera.SimCamera;
 import com.stuypulse.robot.commands.SwerveDriveToPose;
 import com.stuypulse.robot.commands.SwerveDriveToPoseMP;
 import com.stuypulse.robot.commands.auton.DoNothingAuton;
+import com.stuypulse.robot.commands.swerve.BasicGyroEngage;
+import com.stuypulse.robot.commands.swerve.ChargeDrive;
+import com.stuypulse.robot.commands.swerve.GyroAutoEngage;
+import com.stuypulse.robot.commands.swerve.LockWheels;
 import com.stuypulse.robot.commands.swerve.SwerveDriveDrive;
-import com.stuypulse.robot.commands.swerve.SwerveHome;
 import com.stuypulse.robot.commands.swerve.SwerveDriveHome;
 import com.stuypulse.robot.constants.Ports;
 import com.stuypulse.robot.subsystems.SwerveDrive;
@@ -43,14 +50,14 @@ import edu.wpi.first.wpilibj2.command.InstantCommand;
 public class RobotContainer {
 
     // Gamepads
-    public final Gamepad driver = new Xbox(Ports.Gamepad.DRIVER);
-    public final Gamepad operator = new Xbox(Ports.Gamepad.OPERATOR);
+    public final Gamepad driver = new BootlegXbox(Ports.Gamepad.DRIVER);
+    public final Gamepad operator = new BootlegXbox(Ports.Gamepad.OPERATOR);
 
     // Subsystem
-    public final SwerveDrive swerve = SwerveDrive.getInstance();
+    public final ICamera camera = ICamera.getInstance();
+    public final SwerveDrive swerve = SwerveDrive.getInstance(camera);
 
-    public final Drivetrain drivetrain = new Drivetrain(null);
-    public final ICamera camera = ICamera.getInstance(drivetrain);
+    // public final Drivetrain drivetrain = new Drivetrain(null);
 
     // Autons
     private static SendableChooser<Command> autonChooser = new SendableChooser<>();
@@ -70,7 +77,7 @@ public class RobotContainer {
     /****************/
 
     private void configureDefaultCommands() {
-        drivetrain.setDefaultCommand(new DrivetrainDriveCommand(drivetrain, driver));
+        // drivetrain.setDefaultCommand(new DrivetrainDriveCommand(drivetrain, driver));
         swerve.setDefaultCommand(new SwerveDriveDrive(swerve, driver));
     }
 
@@ -80,20 +87,29 @@ public class RobotContainer {
 
     private void configureButtonBindings() {
 
+        driver.getRightBumper()
+            .whileTrue(new BasicGyroEngage(swerve));
+
         driver.getLeftButton()
                 .onTrue(new InstantCommand(
                         // () -> drivetrain.setPose(new Pose2d(5.68, -3.36, new Rotation2d(Math.toRadians(10)))),
-                        () -> drivetrain.setPose(Settings.STARTING_POSE))
+                        () -> swerve.reset(Settings.STARTING_POSE))
                         );
+        driver.getBottomButton()
+            .whileTrue(new ChargeDrive(swerve, driver));
+        
+        driver.getLeftBumper()
+            .whileTrue(new LockWheels(swerve));
+              
 
-        driver.getBottomButton().onTrue(new DrivetrainAlignCommand(drivetrain, camera, Alignment.TARGET_POSE));
+        // driver.getBottomButton().onTrue(new DrivetrainAlignCommand(drivetrain, camera, Alignment.TARGET_POSE));
 
         // driver.getTopButton().onTrue(new Command(()))
         // new Pose2d(5.68, -3.36, new Rotation2d(Math.toRadians(10)))
 
-        driver.getRightButton().whileTrue(new SwerveDriveToPose(swerve, new Pose2d(8, 4, new Rotation2d(0.78539))));
-        driver.getBottomButton().onTrue(new SwerveHome(swerve, new Pose2d(0, 4, new Rotation2d(0)) ));
-        driver.getLeftButton().whileTrue(new SwerveDriveToPoseMP(swerve, new Pose2d(8, 4, new Rotation2d(0.78539))));
+        driver.getRightButton().whileTrue(new SwerveDriveToPose(swerve, new Pose2d(0, 0, new Rotation2d(0))));
+        // driver.getBottomButton().onTrue(new SwerveDriveHome(swerve, new Pose2d(0, 4, new Rotation2d(0)) ));
+        driver.getLeftButton().whileTrue(new SwerveDriveToPoseMP(swerve, new Pose2d(0, 0, new Rotation2d(0))));
         driver.getTopButton().onTrue(new SwerveDriveHome(swerve));
 
     }
@@ -105,6 +121,11 @@ public class RobotContainer {
     public void configureAutons() {
         autonChooser.setDefaultOption("Do Nothing", new DoNothingAuton());
         autonChooser.addOption("Mobility", new MobilityAuton(this));
+        autonChooser.addOption("1 Piece + Dock", new OnePieceDock(this));
+        autonChooser.addOption("2 Piece + Dock", new TwoPieceDock(this));
+        autonChooser.addOption("3 Piece + Dock", new ThreePieceDock(this));
+        autonChooser.addOption("1 Piece", new OnePiece(this));
+        autonChooser.addOption("3 Piece", new ThreePiece(this));
 
         SmartDashboard.putData("Autonomous", autonChooser);
     }

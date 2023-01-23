@@ -1,15 +1,13 @@
 package com.stuypulse.robot.util;
 
+import edu.wpi.first.math.geometry.Rotation2d;
+
 public class Pitch {
-    public static double calculate(double pitch, double roll, double yaw) {
+    public static Rotation2d calculate(Rotation2d pitch, Rotation2d roll, Rotation2d yaw) {
         
-        return -1 * Math.signum(Math.atan(
-            Math.tan(pitch) * Math.cos(yaw) + 
-            Math.tan(roll) * Math.sin(yaw))) * 
-                Math.atan(Math.sqrt(
-                    Math.pow(Math.tan(roll), 2) + 
-                    Math.pow(Math.tan(pitch), 2)
-                    )
-                );
+        double facingSlope = pitch.getTan() * yaw.getCos() + roll.getTan() * yaw.getSin();
+        double maxSlope = Math.sqrt(Math.pow(roll.getTan(), 2) + Math.pow(pitch.getTan(), 2));
+
+        return Rotation2d.fromRadians(Math.signum(facingSlope) * Math.atan(maxSlope));
     }
 }
