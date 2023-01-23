@@ -147,7 +147,6 @@ public interface Settings {
 
         Pose2d TARGET_POSE = new Pose2d(6, 3, new Rotation2d());
 
-
         double MIN_ALIGNMENT_TIME = 1.0;
 
         double TIMEOUT = 15;
@@ -253,6 +252,8 @@ public interface Settings {
 
     public interface Swerve {
         double MIN_MODULE_VELOCITY = 0.05;
+        double MIN_DIST = -1;
+        double MAX_DIST = -1;
 
         public interface Chassis {
             double WIDTH = Units.inchesToMeters(29.0);

@@ -4,12 +4,14 @@ import com.stuypulse.robot.constants.Settings;
 import com.stuypulse.robot.subsystems.ICamera;
 import com.stuypulse.stuylib.math.Angle;
 import com.stuypulse.stuylib.network.limelight.Limelight;
+import com.stuypulse.stuylib.network.limelight.Limelight.LEDMode;
 import com.stuypulse.stuylib.network.limelight.Limelight.Pipeline;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.net.PortForwarder;
+import edu.wpi.first.networktables.NetworkTableInstance;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /* todo: make ICamera, SimCamera */
@@ -67,6 +69,11 @@ public class LLCamera extends ICamera {
 		return txAngle;
 	}
 
+	public long getTagID() {
+		// return Limelight.getTagID(); 
+		return NetworkTableInstance.getDefault().getTable("limelight").getIntegerTopic("tid").getEntry(-1).get();
+	}
+
 	public Angle getVerticalOffset() {
 		if (!hasTarget()) {
             System.out.println("Unable To Find Target! [getVerticalOffset() was called]");
@@ -109,6 +116,9 @@ public class LLCamera extends ICamera {
 		if (!limelight.isConnected()) {
 			System.out.println("[WARNING] Limelight is disconnected.");
 		}
+
+		SmartDashboard.putNumber("Camera/Pipeline", getAlignmentType());
+
 		if (getAlignmentType() == Pipeline.SETTING_1.getCodeValue()) {
 			SmartDashboard.putNumber("Camera/Distance", getDistance());
 			SmartDashboard.putNumber("Camera/Angle", getHorizontalOffset().toDegrees());

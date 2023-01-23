@@ -4,13 +4,17 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.stuypulse.robot.constants.Field;
 import com.stuypulse.robot.constants.Ports;
 import com.stuypulse.robot.constants.Settings;
+import com.stuypulse.robot.constants.Motors.Swerve;
 import com.stuypulse.robot.constants.Settings.Swerve.FrontLeft;
 import com.stuypulse.robot.constants.Settings.Swerve.FrontRight;
+import com.stuypulse.robot.constants.Settings.AlignmentCommand.Translation;
 import com.stuypulse.robot.constants.Settings.Swerve.BackLeft;
 import com.stuypulse.robot.constants.Settings.Swerve.BackRight;
 import com.stuypulse.robot.constants.Settings.Swerve.Chassis;
+import com.stuypulse.robot.subsystems.camera.LLCamera;
 import com.stuypulse.robot.subsystems.modules.SL_SimModule;
 import com.stuypulse.robot.subsystems.modules.SL_SwerveModule;
 import com.stuypulse.robot.subsystems.modules.SwerveModule;
@@ -20,6 +24,7 @@ import com.stuypulse.stuylib.math.Vector2D;
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -100,10 +105,11 @@ public class SwerveDrive extends SubsystemBase {
         odometry = new SwerveDriveOdometry(kinematics, getGyroAngle(), getModulePositions());
 
         poseEstimator = new SwerveDrivePoseEstimator(kinematics, getGyroAngle(), getModulePositions(), new Pose2d());
+
         poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.01, 0.1, Units.degreesToRadians(3)));
 
         field = new Field2d();
-        module2ds = new FieldObject2d[modules.length];
+        module2ds = new FieldObject2d[modules.length]; 
         for (int i = 0; i < modules.length; ++i) {
             module2ds[i] = field.getObject(modules[i].getId()+"-2d");
         }
@@ -257,28 +263,37 @@ public class SwerveDrive extends SubsystemBase {
     /** ODOMETRY API */
 
     private void updatePose() {
+
+        // if robot is within a certain distanace to apriltag, use apriltag pose
+        LLCamera limelight = new LLCamera();
+
+        if (limelight.hasTarget()) {
+
+            Translation2d robotXY;
+            Pose3d aprilTagXY;
+
+            aprilTagXY = Field.aprilTags[ (int) (limelight.getTagID() - 1)]; 
+
+            // double distanceToTag = limelight.getDistance();
+            robotXY = getTranslation();
+
+            double distanceToTag = Math.sqrt(
+                Math.pow(robotXY.getX() - aprilTagXY.getTranslation().getX(), 2) + 
+                Math.pow(robotXY.getY() - aprilTagXY.getTranslation().getY(), 2)
+            );
+
+
+            //if distance to the tag is between MIN_DIST and MAX_DIST then use apriltag
+            if (distanceToTag > Settings.Swerve.MIN_DIST && distanceToTag < Settings.Swerve.MAX_DIST) {
+
+                // reset position with apriltag pose
+                poseEstimator.resetPosition(/* maybe angle from camera as well? */ getGyroAngle(), getModulePositions(), limelight.getPose2d());
+            }
+        }
+
         poseEstimator.update(getGyroAngle(), getModulePositions());
         odometry.update(getGyroAngle(), getModulePositions());
         
-        // if (false) {
-        if (camera.hasTarget()) {
-            Pose2d pose = camera.getPose2d();
-
-            if (Math.abs(pose.getRotation().getDegrees() - getGyroAngle().getDegrees()) > 90) {
-                pose = new Pose2d(pose.getTranslation(), getGyroAngle());
-            }
-            // poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(pose.getX(), pose.getY(), pose.getRotation().getRadians()));
-            poseEstimator.addVisionMeasurement(
-                pose, 
-                Timer.getFPGATimestamp());
-
-            // Translation2d robotPosition = new Translation2d(pose.getX(), pose.getY());
-            // if (getPose().getTranslation().minus(robotPosition).getNorm() < 1.0) {
-            //     poseEstimator.addVisionMeasurement(
-            //             new Pose2d(pose.getX(), pose.getY(), pose.getRotation().toRotation2d()),
-            //             Timer.getFPGATimestamp());
-            // }
-        }
     }
 
     public Pose2d getPose() {
@@ -303,7 +318,9 @@ public class SwerveDrive extends SubsystemBase {
 
     @Override
     public void periodic() {
+
         updatePose();
+
         field.setRobotPose(getPose());
 
         var pose = getPose();
