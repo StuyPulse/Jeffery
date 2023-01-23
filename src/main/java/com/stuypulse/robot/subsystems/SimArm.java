@@ -19,17 +19,6 @@ import edu.wpi.first.wpilibj.smartdashboard.MechanismRoot2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.util.Color8Bit;
 
-
-// IGNORE***: Two single jointed arms, first one contantly change r. use Ia = rFsin(theta) to find a, mass should be same, find r.
-
-/* Todo: 
-    - find moment of inertia at different configurations
-    - Fix constants(add them to settings)
-    - Write feedforward for Arm
-    - rename methods
-    - TEST
-*/
-
 public class SimArm extends IArm {
 
     private final DoubleJointedArmSim armSim;
