@@ -40,6 +40,7 @@ import com.stuypulse.robot.util.BootlegXbox;
 import com.stuypulse.stuylib.input.Gamepad;
 import com.stuypulse.stuylib.input.gamepads.AutoGamepad;
 import com.stuypulse.stuylib.input.gamepads.Xbox;
+import com.stuypulse.stuylib.network.SmartNumber;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
@@ -97,7 +98,7 @@ public class RobotContainer {
                 .onTrue(new InstantCommand(
                         // () -> drivetrain.setPose(new Pose2d(5.68, -3.36, new Rotation2d(Math.toRadians(10)))),
                         // () -> swerve.reset(Settings.STARTING_POSE))
-                        () -> swerve.reset(new Pose2d(2.616, 0, new Rotation2d())))
+                        () -> swerve.reset(new Pose2d(new SmartNumber("Auto Engage/setpoint", 2.616).get(), 0, new Rotation2d())))
                         );
         
         // Auto Engage
