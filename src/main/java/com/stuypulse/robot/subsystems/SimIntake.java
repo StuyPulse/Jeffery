@@ -8,7 +8,7 @@ public class SimIntake {
         private final double roller1;
         private final double roller2;
 
-        private IntakeMode(double roller1, double roller 2) {
+        private IntakeMode(double roller1, double roller2) {
             this.roller1 = roller1;
             this.roller2 = roller2;
         }
