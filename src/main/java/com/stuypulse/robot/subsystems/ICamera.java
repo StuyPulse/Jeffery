@@ -24,11 +24,9 @@ public abstract class ICamera extends SubsystemBase {
 
     public abstract boolean hasTarget();
 
-    public abstract double getDistance();
-
-    public abstract Angle getHorizontalOffset();
-
     public abstract Pose3d getPose3d();
 
     public abstract Pose2d getPose2d();
+
+    public abstract int getTagID();
 }

@@ -55,7 +55,6 @@ public class PVCamera extends ICamera {
         return getResult().hasTargets();
     }
 
-    @Override
     public double getDistance() {
         if (!getResult().hasTargets()) {
             System.out.printf("[WARNING]: getDistance() called with no targets");
@@ -68,7 +67,6 @@ public class PVCamera extends ICamera {
                 Math.toRadians(getResult().getBestTarget().getPitch()));
     }
 
-    @Override
     public Angle getHorizontalOffset() {
         if (!getResult().hasTargets()) {
             System.out.printf("[WARNING]: getHorizontalOffset() called with no targets");
@@ -93,6 +91,11 @@ public class PVCamera extends ICamera {
         Pose3d pose = getPose3d();
         return new Pose2d(pose.getTranslation().getX(), pose.getTranslation().getY(),
             pose.getRotation().toRotation2d());
+    }
+
+    @Override
+    public int getTagID() {
+        return getResult().getBestTarget().getFiducialId();
     }
 
     @Override

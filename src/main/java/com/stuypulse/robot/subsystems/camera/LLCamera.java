@@ -4,8 +4,6 @@ import com.stuypulse.robot.constants.Settings;
 import com.stuypulse.robot.subsystems.ICamera;
 import com.stuypulse.stuylib.math.Angle;
 import com.stuypulse.stuylib.network.limelight.Limelight;
-import com.stuypulse.stuylib.network.limelight.Limelight.LEDMode;
-import com.stuypulse.stuylib.network.limelight.Limelight.Pipeline;
 
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
@@ -17,21 +15,6 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 /* todo: make ICamera, SimCamera */
 public class LLCamera extends ICamera {
 
-	public enum AlignmentType {
-		APRIL_TAG(Pipeline.SETTING_0),
-		REFLECTIVE_TAPE(Pipeline.SETTING_1);
-
-		private final Pipeline value;
-
-		AlignmentType(Pipeline pipeline) {
-			this.value = pipeline;
-		}
-
-		public Pipeline getPipeline() {
-			return value;
-		}
-	}
-
 	private Limelight limelight;
 	
 	public LLCamera() {
@@ -41,59 +24,17 @@ public class LLCamera extends ICamera {
             PortForwarder.add(port, "limelight.local", port);
         }
         CameraServer.startAutomaticCapture();
-
-		setAlignmentType(AlignmentType.APRIL_TAG);
 	}
 
-	public void setAlignmentType(AlignmentType alignmentType){
-		limelight.setPipeline(alignmentType.value);
-	}
-
-	public double getAlignmentType() {
-		return limelight.getPipeline().getCodeValue();
-	}
-
+	@Override
 	public double getLatency() {
 		return limelight.getLatencyMs() / 1000.0;
 	}
 
-	public Angle getHorizontalOffset() {
-		if (!hasTarget()) {
-            System.out.println("Unable To Find Target! [getHorizontal() was called]");
-            return Angle.kZero;
-        }
-		double txDegrees = limelight.getTargetXAngle();
-
-		Angle txAngle = Angle.fromDegrees(txDegrees);
-		
-		return txAngle;
-	}
-
-	public long getTagID() {
+	public int getTagID() {
 		// return Limelight.getTagID(); 
-		return NetworkTableInstance.getDefault().getTable("limelight").getIntegerTopic("tid").getEntry(-1).get();
+		return (int)NetworkTableInstance.getDefault().getTable("limelight").getIntegerTopic("tid").getEntry(-1).get();
 	}
-
-	public Angle getVerticalOffset() {
-		if (!hasTarget()) {
-            System.out.println("Unable To Find Target! [getVerticalOffset() was called]");
-            return Angle.kZero;
-        }
-		double tyDegrees = limelight.getTargetYAngle();
-		
-		Angle tyAngle = Angle.fromDegrees(tyDegrees);
-
-		return tyAngle;
-	}
-
-	public double getDistance() {
-		Angle ty = getVerticalOffset().add(Settings.Limelight.CAMERA_PITCH);
-
-		double distance = (Settings.Field.HUB_HEIGHT-Settings.Limelight.CAMERA_HEIGHT) / ty.tan();
-
-		return distance + Settings.Field.HUB_TO_CENTER + Settings.Limelight.CAMERA_TO_CENTER;
-	}
-
 	
     public boolean hasTarget() {
         return limelight.getValidTarget();
@@ -117,18 +58,11 @@ public class LLCamera extends ICamera {
 			System.out.println("[WARNING] Limelight is disconnected.");
 		}
 
-		SmartDashboard.putNumber("Camera/Pipeline", getAlignmentType());
+		Pose2d pose = getPose2d();
 
-		if (getAlignmentType() == Pipeline.SETTING_1.getCodeValue()) {
-			SmartDashboard.putNumber("Camera/Distance", getDistance());
-			SmartDashboard.putNumber("Camera/Angle", getHorizontalOffset().toDegrees());
-		} else {
-			Pose2d pose = getPose2d();
-
-			SmartDashboard.putNumber("Camera/Pose X", pose.getX());
-			SmartDashboard.putNumber("Camera/Pose Y", pose.getY());
-			SmartDashboard.putNumber("Camera/Pose Rotation", pose.getRotation().getDegrees());
-		}	
+		SmartDashboard.putNumber("Camera/Pose X", pose.getX());
+		SmartDashboard.putNumber("Camera/Pose Y", pose.getY());
+		SmartDashboard.putNumber("Camera/Pose Rotation", pose.getRotation().getDegrees());
 	}
 
 }

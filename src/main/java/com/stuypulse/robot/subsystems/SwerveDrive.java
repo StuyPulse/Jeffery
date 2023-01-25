@@ -45,7 +45,7 @@ public class SwerveDrive extends SubsystemBase {
 
     private static SwerveDrive instance = null;
 
-    public static SwerveDrive getInstance(ICamera camera) {
+    public static SwerveDrive getInstance() {
         if (instance == null) {
             if (RobotBase.isReal()) {
                 instance = new SwerveDrive(new SwerveModule[] {
@@ -53,7 +53,7 @@ public class SwerveDrive extends SubsystemBase {
                     new SL_SwerveModule(FrontLeft.ID, FrontLeft.MODULE_OFFSET, Ports.Swerve.FrontLeft.TURN, Ports.Swerve.FrontLeft.ENCODER, FrontLeft.ABSOLUTE_OFFSET, Ports.Swerve.FrontLeft.DRIVE),
                     new SL_SwerveModule(BackLeft.ID, BackLeft.MODULE_OFFSET, Ports.Swerve.BackLeft.TURN, Ports.Swerve.BackLeft.ENCODER, BackLeft.ABSOLUTE_OFFSET, Ports.Swerve.BackLeft.DRIVE),
                     new SL_SwerveModule(BackRight.ID, BackRight.MODULE_OFFSET, Ports.Swerve.BackRight.TURN, Ports.Swerve.BackRight.ENCODER, BackRight.ABSOLUTE_OFFSET, Ports.Swerve.BackRight.DRIVE)
-                }, camera);
+                });
     
                 // instance = new SwerveDrive(new SwerveModule[] {
                 //     new SparkMax_Module(FrontRight.ID, FrontRight.MODULE_OFFSET, Ports.Swerve.FrontRight.TURN, Ports.Swerve.FrontRight.ENCODER, FrontRight.ABSOLUTE_OFFSET.getRotation2d(), Ports.Swerve.FrontRight.DRIVE),
@@ -67,7 +67,7 @@ public class SwerveDrive extends SubsystemBase {
                     new SL_SimModule(FrontLeft.ID, FrontLeft.MODULE_OFFSET),
                     new SL_SimModule(BackLeft.ID, BackLeft.MODULE_OFFSET),
                     new SL_SimModule(BackRight.ID, BackRight.MODULE_OFFSET)
-                }, camera);
+                });
             }
         }
         return instance;
@@ -89,10 +89,8 @@ public class SwerveDrive extends SubsystemBase {
     private final Field2d field;
     private final FieldObject2d[] module2ds;
 
-    private final ICamera camera;
 
-
-    public SwerveDrive(SwerveModule[] modules, ICamera camera) {
+    public SwerveDrive(SwerveModule[] modules) {
         this.modules = modules;
 
         gyro = new AHRS(SPI.Port.kMXP);
@@ -106,7 +104,7 @@ public class SwerveDrive extends SubsystemBase {
 
         poseEstimator = new SwerveDrivePoseEstimator(kinematics, getGyroAngle(), getModulePositions(), new Pose2d());
 
-        poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.01, 0.1, Units.degreesToRadians(3)));
+        poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(Settings.Swerve.MAX_DIST, Settings.Swerve.MAX_DIST, Units.degreesToRadians(20)));
 
         field = new Field2d();
         module2ds = new FieldObject2d[modules.length]; 
@@ -116,8 +114,6 @@ public class SwerveDrive extends SubsystemBase {
 
         reset(new Pose2d());
         SmartDashboard.putData("Field", field);
-
-        this.camera = camera;
     }
 
     public Field2d getField() {
@@ -263,37 +259,27 @@ public class SwerveDrive extends SubsystemBase {
     /** ODOMETRY API */
 
     private void updatePose() {
-
-        // if robot is within a certain distanace to apriltag, use apriltag pose
-        LLCamera limelight = new LLCamera();
+        ICamera limelight = ICamera.getInstance();
 
         if (limelight.hasTarget()) {
 
-            Translation2d robotXY;
-            Pose3d aprilTagXY;
+            Pose2d pose = limelight.getPose2d();
 
-            aprilTagXY = Field.aprilTags[ (int) (limelight.getTagID() - 1)]; 
+            Pose3d tagPose = Field.aprilTags[ (int) (limelight.getTagID() - 1)]; 
 
-            // double distanceToTag = limelight.getDistance();
-            robotXY = getTranslation();
-
-            double distanceToTag = Math.sqrt(
-                Math.pow(robotXY.getX() - aprilTagXY.getTranslation().getX(), 2) + 
-                Math.pow(robotXY.getY() - aprilTagXY.getTranslation().getY(), 2)
+            double dist = Math.hypot(
+                pose.getX() - tagPose.getX(), 
+                pose.getY() - tagPose.getY()
             );
 
-
-            //if distance to the tag is between MIN_DIST and MAX_DIST then use apriltag
-            if (distanceToTag > Settings.Swerve.MIN_DIST && distanceToTag < Settings.Swerve.MAX_DIST) {
-
-                // reset position with apriltag pose
-                poseEstimator.resetPosition(/* maybe angle from camera as well? */ getGyroAngle(), getModulePositions(), limelight.getPose2d());
+            if (dist < Settings.Swerve.MAX_DIST) {
+                reset(limelight.getPose2d());
+            } else {
+                poseEstimator.addVisionMeasurement(limelight.getPose2d(), Timer.getFPGATimestamp() - limelight.getLatency());
             }
         }
-
         poseEstimator.update(getGyroAngle(), getModulePositions());
         odometry.update(getGyroAngle(), getModulePositions());
-        
     }
 
     public Pose2d getPose() {
@@ -339,9 +325,6 @@ public class SwerveDrive extends SubsystemBase {
         SmartDashboard.putNumber("Swerve/Odometry X", getOdometryPose().getTranslation().getX());
         SmartDashboard.putNumber("Swerve/Odometry Y", getOdometryPose().getTranslation().getY());
         SmartDashboard.putNumber("Swerve/Odometry Angle (deg)", getOdometryAngle().getDegrees());
-        // double deg = getAngle().getDegrees();
-        // if (deg < 0) deg += 360;
-        // SmartDashboard.putNumber("Swerve/0-360 Pose Angle (deg)", deg);
 
         SmartDashboard.putNumber("Swerve/Gyro Angle", getAngle().getDegrees());
         SmartDashboard.putNumber("Swerve/Gyro Pitch", getGyroPitch().getDegrees());

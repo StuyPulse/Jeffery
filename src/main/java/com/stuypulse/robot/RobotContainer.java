@@ -55,7 +55,7 @@ public class RobotContainer {
 
     // Subsystem
     public final ICamera camera = ICamera.getInstance();
-    public final SwerveDrive swerve = SwerveDrive.getInstance(camera);
+    public final SwerveDrive swerve = SwerveDrive.getInstance();
 
     // public final Drivetrain drivetrain = new Drivetrain(null);
 
