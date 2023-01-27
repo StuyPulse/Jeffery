@@ -1,6 +1,9 @@
 package com.stuypulse.robot.subsystems;
 
+import java.util.Optional;
+
 import com.stuypulse.robot.subsystems.camera.*;
+import com.stuypulse.robot.util.AprilTagData;
 // import com.stuypulse.robot.subsystems.camera.SimCamera;
 import com.stuypulse.stuylib.math.Angle;
 
@@ -20,11 +23,5 @@ public abstract class ICamera extends SubsystemBase {
         return instance;
     }
 
-    public abstract boolean hasRobotPose();
-
-    public abstract Pose2d getRobotPose();
-
-    public abstract double getLatency();
-
-    // public abstract int getTagID();
+    public abstract Optional<AprilTagData> getPoseData();
 }
