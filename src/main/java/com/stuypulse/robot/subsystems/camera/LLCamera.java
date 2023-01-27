@@ -8,61 +8,63 @@ import com.stuypulse.stuylib.network.limelight.Limelight;
 import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.net.PortForwarder;
+import edu.wpi.first.networktables.DoubleArrayEntry;
+import edu.wpi.first.networktables.DoubleEntry;
+import edu.wpi.first.networktables.NetworkTable;
 import edu.wpi.first.networktables.NetworkTableInstance;
+import edu.wpi.first.wpilibj.smartdashboard.Field2d;
+import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /* todo: make ICamera, SimCamera */
 public class LLCamera extends ICamera {
 
-	private Limelight limelight;
-	
+	private double[] botposeData;
+
+	private DoubleEntry latencyEntry;
+	private DoubleArrayEntry botposeEntry;
+
 	public LLCamera() {
-		limelight = Limelight.getInstance(); 
+		final String name = "limelight-back";
+		final NetworkTable limelight = 
+			NetworkTableInstance.getDefault().getTable(name);
+
+		botposeData = new double[] {};
+
+		latencyEntry = 
+			limelight.getDoubleTopic("tl").getEntry(0.0);
+		botposeEntry = 
+			limelight.getDoubleArrayTopic("botpose").getEntry(botposeData);
 
 		for (int port : Settings.Limelight.PORTS) {
-            PortForwarder.add(port, "limelight.local", port);
+            PortForwarder.add(port, name + ".local", port);
         }
-        CameraServer.startAutomaticCapture();
 	}
 
 	@Override
 	public double getLatency() {
-		return limelight.getLatencyMs() / 1000.0;
+		final double limelightCaptureDelay = 11.0;
+		return 
+			Units.millisecondsToSeconds(latencyEntry.get() + limelightCaptureDelay);
 	}
 
-	public int getTagID() {
-		// return Limelight.getTagID(); 
-		return (int)NetworkTableInstance.getDefault().getTable("limelight").getIntegerTopic("tid").getEntry(-1).get();
-	}
-	
-    public boolean hasTarget() {
-        return limelight.getValidTarget();
+	@Override
+    public boolean hasRobotPose() {
+        return botposeData != null && botposeData.length == 6;
     }
 
-	public Pose2d getPose2d() {
-		Pose3d pose = getPose3d();
-		return new Pose2d(pose.getTranslation().getX(), pose.getTranslation().getY(), pose.getRotation().toRotation2d());
-	}
-
-	public Pose3d getPose3d() {
-		if (limelight.getRobotPose() == null) {
-			return new Pose3d();
-		}
-        return limelight.getRobotPose();
+	@Override
+	public Pose2d getRobotPose() {
+		return new Pose2d(botposeData[0], botposeData[1], Rotation2d.fromDegrees(botposeData[5]));
 	}
 
 	@Override
 	public void periodic() {
-		if (!limelight.isConnected()) {
-			System.out.println("[WARNING] Limelight is disconnected.");
-		}
-
-		Pose2d pose = getPose2d();
-
-		SmartDashboard.putNumber("Camera/Pose X", pose.getX());
-		SmartDashboard.putNumber("Camera/Pose Y", pose.getY());
-		SmartDashboard.putNumber("Camera/Pose Rotation", pose.getRotation().getDegrees());
+		// TODO: check if limelight is connected
+		botposeData = botposeEntry.get();
 	}
 
 }
