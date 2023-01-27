@@ -13,9 +13,9 @@ public abstract class ICamera extends SubsystemBase {
 
     private static ICamera instance = null;
 
-    public static ICamera getInstance(Drivetrain drivetrain) {
+    public static ICamera getInstance() {
         if (instance == null) {
-            instance = RobotBase.isReal() ? new LLCamera() : new SimCamera(drivetrain);
+            instance = RobotBase.isReal() ? new LLCamera() : new LLCamera();
         }
         return instance;
     }
@@ -24,11 +24,9 @@ public abstract class ICamera extends SubsystemBase {
 
     public abstract boolean hasTarget();
 
-    public abstract double getDistance();
-
-    public abstract Angle getHorizontalOffset();
-
     public abstract Pose3d getPose3d();
 
     public abstract Pose2d getPose2d();
+
+    public abstract int getTagID();
 }

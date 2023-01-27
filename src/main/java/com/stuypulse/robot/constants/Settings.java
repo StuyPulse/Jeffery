@@ -22,7 +22,9 @@ import com.stuypulse.stuylib.streams.filters.LowPassFilter;
 
 import edu.wpi.first.math.controller.SimpleMotorFeedforward;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.DifferentialDriveKinematics;
 import edu.wpi.first.math.util.Units;
@@ -41,7 +43,7 @@ import edu.wpi.first.math.util.Units;
  */
 public interface Settings {
 
-    Pose2d STARTING_POSE = new Pose2d(Units.inchesToMeters(130), Units.inchesToMeters(16) + 0.89, new Rotation2d(Math.toRadians(180)));
+    Pose2d STARTING_POSE = new Pose2d(Units.inchesToMeters(30) + Drivetrain.TRACK_WIDTH / 2, Units.inchesToMeters(0) + 0.89, new Rotation2d(Math.toRadians(180)));
 
     Path DEPLOY_DIRECTORY = Filesystem.getDeployDirectory().toPath();
 
@@ -125,6 +127,18 @@ public interface Settings {
         double HUB_HEIGHT = Units.feetToMeters(8) + Units.inchesToMeters(9);
         double HUB_TO_CENTER = Units.feetToMeters(2.0);
         Translation2d HUB = new Translation2d(Units.feetToMeters(12.8), 0);
+
+        public interface Tag1 {
+            Pose3d POSE = new Pose3d(
+                Units.inchesToMeters(94),
+                Units.inchesToMeters(20),
+                Units.inchesToMeters(78),
+                new Rotation3d(
+                    0,
+                    0,
+                    Units.degreesToRadians(-155)
+                ));
+        }
     }
 
     public interface Alignment {
@@ -132,7 +146,6 @@ public interface Settings {
         // Pose2d TARGET_POSE = new Pose2d(6, -3, new Rotation2d());
 
         Pose2d TARGET_POSE = new Pose2d(6, 3, new Rotation2d());
-
 
         double MIN_ALIGNMENT_TIME = 1.0;
 
@@ -239,6 +252,7 @@ public interface Settings {
 
     public interface Swerve {
         double MIN_MODULE_VELOCITY = 0.05;
+        double MAX_DIST = Units.inchesToMeters(85);
 
         public interface Chassis {
             double WIDTH = Units.inchesToMeters(29.0);

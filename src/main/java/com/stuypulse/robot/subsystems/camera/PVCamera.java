@@ -33,19 +33,16 @@ public class PVCamera extends ICamera {
         PortForwarder.add(5800, "photonvision.local", 5800);
     }
 
-    public PVCamera() {
-        this("photonvision");
-    }
-
-    private void forceUpdateResult() {
-        result = camera.getLatestResult();
-    }
+    // private void forceUpdateResult() {
+    //     result = camera.getLatestResult();
+    // }
 
     private PhotonPipelineResult getResult() {
-        if (result == null) {
-            forceUpdateResult();
-        }
-        return result;
+        // if (result == null) {
+        //     forceUpdateResult();
+        // }
+        // return result;
+        return camera.getLatestResult();
     }
 
     @Override
@@ -58,7 +55,6 @@ public class PVCamera extends ICamera {
         return getResult().hasTargets();
     }
 
-    @Override
     public double getDistance() {
         if (!getResult().hasTargets()) {
             System.out.printf("[WARNING]: getDistance() called with no targets");
@@ -71,7 +67,6 @@ public class PVCamera extends ICamera {
                 Math.toRadians(getResult().getBestTarget().getPitch()));
     }
 
-    @Override
     public Angle getHorizontalOffset() {
         if (!getResult().hasTargets()) {
             System.out.printf("[WARNING]: getHorizontalOffset() called with no targets");
@@ -82,12 +77,13 @@ public class PVCamera extends ICamera {
 
     public Pose3d getPose3d() {
         Pose3d pose = ComputerVisionUtil.objectToRobotPose(
-            new Pose3d(
-                    0, 0, Units.inchesToMeters(64),
-                    new Rotation3d()),
+            // Apriltag Pose relative to robot's origin    
+            Field.Tag1.POSE,
             result.getBestTarget().getBestCameraToTarget(),
-            new Transform3d(new Translation3d(Units.inchesToMeters(10), 0, 0),
-                    new Rotation3d(0, /*-Limelight.PITCH*/ 0, 0)));
+            // transformation from robot's origin to camera
+            new Transform3d(
+                new Translation3d(Limelight.CAMERA_TO_CENTER, 0, Limelight.CAMERA_HEIGHT),
+                new Rotation3d(0, Limelight.CAMERA_PITCH.toRadians(), 0)));
         return pose;
     }
 
@@ -95,6 +91,11 @@ public class PVCamera extends ICamera {
         Pose3d pose = getPose3d();
         return new Pose2d(pose.getTranslation().getX(), pose.getTranslation().getY(),
             pose.getRotation().toRotation2d());
+    }
+
+    @Override
+    public int getTagID() {
+        return getResult().getBestTarget().getFiducialId();
     }
 
     @Override

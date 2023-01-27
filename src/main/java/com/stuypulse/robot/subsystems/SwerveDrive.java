@@ -4,25 +4,32 @@ import java.util.Arrays;
 import java.util.stream.Stream;
 
 import com.kauailabs.navx.frc.AHRS;
+import com.stuypulse.robot.constants.Field;
 import com.stuypulse.robot.constants.Ports;
 import com.stuypulse.robot.constants.Settings;
+import com.stuypulse.robot.constants.Motors.Swerve;
 import com.stuypulse.robot.constants.Settings.Swerve.FrontLeft;
 import com.stuypulse.robot.constants.Settings.Swerve.FrontRight;
+import com.stuypulse.robot.constants.Settings.AlignmentCommand.Translation;
 import com.stuypulse.robot.constants.Settings.Swerve.BackLeft;
 import com.stuypulse.robot.constants.Settings.Swerve.BackRight;
 import com.stuypulse.robot.constants.Settings.Swerve.Chassis;
+import com.stuypulse.robot.subsystems.camera.LLCamera;
 import com.stuypulse.robot.subsystems.modules.SL_SimModule;
 import com.stuypulse.robot.subsystems.modules.SL_SwerveModule;
 import com.stuypulse.robot.subsystems.modules.SwerveModule;
+import com.stuypulse.robot.util.Pitch;
 import com.stuypulse.stuylib.math.Vector2D;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.math.util.Units;
@@ -32,6 +39,7 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import edu.wpi.first.wpilibj.RobotBase;
 import edu.wpi.first.wpilibj.SPI;
+import edu.wpi.first.wpilibj.Timer;
 
 public class SwerveDrive extends SubsystemBase {
 
@@ -74,6 +82,8 @@ public class SwerveDrive extends SubsystemBase {
 
     /** ODOMETRY **/
     private final SwerveDriveKinematics kinematics;
+
+    private final SwerveDriveOdometry odometry;
     private final SwerveDrivePoseEstimator poseEstimator;
 
     private final Field2d field;
@@ -90,11 +100,14 @@ public class SwerveDrive extends SubsystemBase {
                         .map(x -> x.getLocation())
                         .toArray(Translation2d[]::new));
 
+        odometry = new SwerveDriveOdometry(kinematics, getGyroAngle(), getModulePositions());
+
         poseEstimator = new SwerveDrivePoseEstimator(kinematics, getGyroAngle(), getModulePositions(), new Pose2d());
-        poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.01, 0.1, Units.degreesToRadians(3)));
+
+        poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(Settings.Swerve.MAX_DIST, Settings.Swerve.MAX_DIST, Units.degreesToRadians(20)));
 
         field = new Field2d();
-        module2ds = new FieldObject2d[modules.length];
+        module2ds = new FieldObject2d[modules.length]; 
         for (int i = 0; i < modules.length; ++i) {
             module2ds[i] = field.getObject(modules[i].getId()+"-2d");
         }
@@ -148,6 +161,7 @@ public class SwerveDrive extends SubsystemBase {
     }
 
     public void reset(Pose2d pose) {
+        odometry.resetPosition(getGyroAngle(), getModulePositions(), pose);
         poseEstimator.resetPosition(getGyroAngle(), getModulePositions(), pose);
     }
 
@@ -212,7 +226,7 @@ public class SwerveDrive extends SubsystemBase {
     }
 
     public void stop() {
-        setStates(new ChassisSpeeds(0,0,0), false);
+        setStates(new ChassisSpeeds(), true);
     }
 
     public void setStates(SwerveModuleState... states) {
@@ -234,40 +248,65 @@ public class SwerveDrive extends SubsystemBase {
         return gyro.getRotation2d();
     }
 
-    public double getGyroPitch() {
-        return gyro.getPitch();
+    public Rotation2d getGyroPitch() {
+        return Rotation2d.fromDegrees(gyro.getPitch());
     }
 
-    public double getGyroRoll() {
-        return gyro.getRoll();
+    public Rotation2d getGyroRoll() {
+        return Rotation2d.fromDegrees(gyro.getRoll());
     }
 
     /** ODOMETRY API */
 
     private void updatePose() {
+        ICamera limelight = ICamera.getInstance();
+
+        if (limelight.hasTarget()) {
+
+            Pose2d pose = limelight.getPose2d();
+
+            Pose3d tagPose = Field.aprilTags[ (int) (limelight.getTagID() - 1)]; 
+
+            double dist = Math.hypot(
+                pose.getX() - tagPose.getX(), 
+                pose.getY() - tagPose.getY()
+            );
+
+            if (dist < Settings.Swerve.MAX_DIST) {
+                reset(limelight.getPose2d());
+            } else {
+                poseEstimator.addVisionMeasurement(limelight.getPose2d(), Timer.getFPGATimestamp() - limelight.getLatency());
+            }
+        }
         poseEstimator.update(getGyroAngle(), getModulePositions());
-        // ICamera camera = ICamera.getInstance();
-        // if (camera.hasTarget()) {
-        //     poseEstimator.addVisionMeasurement(camera.getRobotPose(), Timer.getFPGATimestamp() - camera.getLatency());
-        // }
+        odometry.update(getGyroAngle(), getModulePositions());
     }
 
     public Pose2d getPose() {
         return poseEstimator.getEstimatedPosition();
     }
 
+    public Pose2d getOdometryPose() {
+        return odometry.getPoseMeters();
+    }
+
     public Rotation2d getAngle() {
         return getPose().getRotation();
+    }
+
+    public Rotation2d getOdometryAngle() {
+        return odometry.getPoseMeters().getRotation();
     }
 
     public SwerveDriveKinematics getKinematics() {
         return kinematics;
     }
 
-    // AngleVelocity anglevelocity = new AngleVelocity();
     @Override
     public void periodic() {
+
         updatePose();
+
         field.setRobotPose(getPose());
 
         var pose = getPose();
@@ -279,12 +318,25 @@ public class SwerveDrive extends SubsystemBase {
         }
 
         // TODO: log angular velocity and velocity vector
-        SmartDashboard.putNumber("Swerve/Pose X", getPose().getTranslation().getX());
-        SmartDashboard.putNumber("Swerve/Pose Y", getPose().getTranslation().getY());
-        SmartDashboard.putNumber("Swerve/Pose Angle", getAngle().getDegrees());
-        SmartDashboard.putNumber("Swerve/Gyro Angle", gyro.getRotation2d().getDegrees());
+        SmartDashboard.putNumber("Swerve/Pose Estimator X", getPose().getTranslation().getX());
+        SmartDashboard.putNumber("Swerve/Pose Estimator Y", getPose().getTranslation().getY());
+        SmartDashboard.putNumber("Swerve/Pose Estimator Angle (deg)", getAngle().getDegrees());
+
+        SmartDashboard.putNumber("Swerve/Odometry X", getOdometryPose().getTranslation().getX());
+        SmartDashboard.putNumber("Swerve/Odometry Y", getOdometryPose().getTranslation().getY());
+        SmartDashboard.putNumber("Swerve/Odometry Angle (deg)", getOdometryAngle().getDegrees());
+
+        SmartDashboard.putNumber("Swerve/Gyro Angle", getAngle().getDegrees());
+        SmartDashboard.putNumber("Swerve/Gyro Pitch", getGyroPitch().getDegrees());
+        SmartDashboard.putNumber("Swerve/Gyro Roll", getGyroRoll().getDegrees());
+
         SmartDashboard.putNumber("Swerve/Bottom Right Module Speed", getModule("Back Right").getState().speedMetersPerSecond);
-        SmartDashboard.putNumber("Swerve/Angle", getAngle().getRadians());
+        SmartDashboard.putNumber("Swerve/Pose Angle (rad)", getAngle().getRadians());
+
+        SmartDashboard.putNumber("Swerve/Charge Station Angle (rad)", Pitch.calculate(
+            getGyroPitch(),
+            getGyroRoll(),
+            getAngle()).getDegrees());
 
     }
 

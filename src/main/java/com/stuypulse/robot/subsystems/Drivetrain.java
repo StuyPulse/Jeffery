@@ -303,10 +303,6 @@ public class Drivetrain extends SubsystemBase {
 
     @Override
     public void periodic() {
-        if (camera == null) {
-            camera = ICamera.getInstance(this);
-        }
-
         // odometry.update(getRotation2d(), getLeftDistance(), getRightDistance());
         poseEstimator.update(getRotation2d(), getLeftDistance(), getRightDistance());
         field.setRobotPose(getPose());
