@@ -1,30 +1,27 @@
 package com.stuypulse.robot.subsystems;
 
 import java.util.Arrays;
+import java.util.Optional;
 import java.util.stream.Stream;
 
 import com.kauailabs.navx.frc.AHRS;
-import com.stuypulse.robot.constants.Field;
 import com.stuypulse.robot.constants.Ports;
 import com.stuypulse.robot.constants.Settings;
-import com.stuypulse.robot.constants.Motors.Swerve;
 import com.stuypulse.robot.constants.Settings.Swerve.FrontLeft;
 import com.stuypulse.robot.constants.Settings.Swerve.FrontRight;
-import com.stuypulse.robot.constants.Settings.AlignmentCommand.Translation;
 import com.stuypulse.robot.constants.Settings.Swerve.BackLeft;
 import com.stuypulse.robot.constants.Settings.Swerve.BackRight;
 import com.stuypulse.robot.constants.Settings.Swerve.Chassis;
-import com.stuypulse.robot.subsystems.camera.LLCamera;
 import com.stuypulse.robot.subsystems.modules.SL_SimModule;
 import com.stuypulse.robot.subsystems.modules.SL_SwerveModule;
 import com.stuypulse.robot.subsystems.modules.SwerveModule;
+import com.stuypulse.robot.util.AprilTagData;
 import com.stuypulse.robot.util.Pitch;
 import com.stuypulse.stuylib.math.Vector2D;
 
 import edu.wpi.first.math.VecBuilder;
 import edu.wpi.first.math.estimator.SwerveDrivePoseEstimator;
 import edu.wpi.first.math.geometry.Pose2d;
-import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
@@ -32,7 +29,6 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
 import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
-import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.smartdashboard.Field2d;
 import edu.wpi.first.wpilibj.smartdashboard.FieldObject2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -222,17 +218,12 @@ public class SwerveDrive extends SubsystemBase {
 
 
     private void updatePose() {
-        ICamera limelight = ICamera.getInstance();
-
-        if (limelight.hasRobotPose()) {
-            Pose2d pose = limelight.getRobotPose();
-            visionData = pose;
-            poseEstimator.addVisionMeasurement(pose, Timer.getFPGATimestamp() - limelight.getLatency());
-        } else {
-            visionData = kNoPose;
+        Optional<AprilTagData> pose = ICamera.getInstance().getPoseData();
+        if (pose.isPresent()) {
+            AprilTagData poseData = pose.get();
+            poseEstimator.addVisionMeasurement(poseData.pose, Timer.getFPGATimestamp() - poseData.latency);
         }
         poseEstimator.update(getGyroAngle(), getModulePositions());
-        odometry.update(getGyroAngle(), getModulePositions());
     }
 
     public Pose2d getPose() {
