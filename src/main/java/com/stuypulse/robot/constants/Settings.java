@@ -43,7 +43,7 @@ import edu.wpi.first.math.util.Units;
  */
 public interface Settings {
 
-    Pose2d STARTING_POSE = new Pose2d(Units.inchesToMeters(30) + Drivetrain.TRACK_WIDTH / 2, Units.inchesToMeters(0) + 0.89, new Rotation2d(Math.toRadians(180)));
+    Pose2d STARTING_POSE = new Pose2d(3.01, -0.3, Rotation2d.fromDegrees(0));
 
     Path DEPLOY_DIRECTORY = Filesystem.getDeployDirectory().toPath();
 
@@ -340,12 +340,12 @@ public interface Settings {
     public interface AlignmentCommand{
         
         public interface Translation {
-            SmartNumber P = new SmartNumber("Alignment/Translation/kP", 2.5);
+            SmartNumber P = new SmartNumber("Alignment/Translation/kP", 2);
             SmartNumber I = new SmartNumber("Alignment/Translation/kI", 0);
-            SmartNumber D = new SmartNumber("Alignment/Translation/kD", 0);
+            SmartNumber D = new SmartNumber("Alignment/Translation/kD", 0.0);
         }
         public interface Rotation {
-            SmartNumber P = new SmartNumber("Alignment/Rotation/kP", 1);
+            SmartNumber P = new SmartNumber("Alignment/Rotation/kP", 2);
             SmartNumber I = new SmartNumber("Alignment/Rotation/kI", 0);
             SmartNumber D = new SmartNumber("Alignment/Rotation/kD", 0);
         }

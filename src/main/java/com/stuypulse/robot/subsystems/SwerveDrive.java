@@ -87,6 +87,7 @@ public class SwerveDrive extends SubsystemBase {
     private final SwerveDrivePoseEstimator poseEstimator;
 
     private final Field2d field;
+    private final Field2d cameraField;
     private final FieldObject2d[] module2ds;
 
 
@@ -104,16 +105,17 @@ public class SwerveDrive extends SubsystemBase {
 
         poseEstimator = new SwerveDrivePoseEstimator(kinematics, getGyroAngle(), getModulePositions(), new Pose2d());
 
-        poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(Settings.Swerve.MAX_DIST, Settings.Swerve.MAX_DIST, Units.degreesToRadians(20)));
+        poseEstimator.setVisionMeasurementStdDevs(VecBuilder.fill(0.5, 0.5, Math.toRadians(5)));
+        reset(Settings.STARTING_POSE);
 
         field = new Field2d();
+        cameraField = new Field2d();
         module2ds = new FieldObject2d[modules.length]; 
         for (int i = 0; i < modules.length; ++i) {
             module2ds[i] = field.getObject(modules[i].getId()+"-2d");
         }
-
-        reset(new Pose2d());
         SmartDashboard.putData("Field", field);
+        SmartDashboard.putData("Camera Field", cameraField);
     }
 
     public Field2d getField() {
@@ -167,51 +169,8 @@ public class SwerveDrive extends SubsystemBase {
 
     /** MODULE STATES API **/
 
-    private static double getSaturation(SwerveModuleState[] states) {
-        double sat = 1;
-        for (var state : states) {
-            sat = Math.max(sat, state.speedMetersPerSecond / Chassis.MAX_SPEED);
-        }
-        return sat;
-    }
-
     public void setStates(Vector2D velocity, double omega, boolean fieldRelative) {
-        if (fieldRelative) {
-            final Rotation2d correction = new Rotation2d(0.5 * omega * Settings.DT);
-
-            ChassisSpeeds speeds = ChassisSpeeds.fromFieldRelativeSpeeds(velocity.y,
-                    -velocity.x, -omega,
-                    getAngle().plus(correction));
-
-            for (int i = 0; i < 8; ++i) {
-                double saturation = getSaturation(kinematics.toSwerveModuleStates(speeds));
-
-                speeds = ChassisSpeeds.fromFieldRelativeSpeeds(velocity.y, -velocity.x,
-                        -omega,
-                        getAngle().plus(correction.times(1.0 / saturation)));
-            }
-
-            // setStatesRetainAngle(speeds);
-            setStates(speeds, false);
-        } else {
-            setStates(new ChassisSpeeds(velocity.y, -velocity.x, -omega), false);
-        }
-    }
-
-    private void setStatesRetainAngle(ChassisSpeeds robotSpeed) {
-        var moduleStates = kinematics.toSwerveModuleStates(robotSpeed);
-        SwerveDriveKinematics.desaturateWheelSpeeds(moduleStates, Chassis.MAX_SPEED);
-        for (int i = 0; i < modules.length; ++i) {
-            var currentState = modules[i].getState();
-            if (Math.abs(moduleStates[i].speedMetersPerSecond) < Settings.Swerve.MIN_MODULE_VELOCITY) {
-                modules[i].setTargetState(new SwerveModuleState(
-                    moduleStates[i].speedMetersPerSecond, 
-                    currentState.angle
-                ));
-            } else {
-                modules[i].setTargetState(moduleStates[i]);
-            }
-        }
+        setStates(new ChassisSpeeds(velocity.y, -velocity.x, -omega), fieldRelative);
     }
 
     public void setStates(Vector2D velocity, double omega) {
@@ -258,25 +217,19 @@ public class SwerveDrive extends SubsystemBase {
 
     /** ODOMETRY API */
 
+    private static final Pose2d kNoPose = new Pose2d(Double.NaN, Double.NaN, new Rotation2d(Double.NaN));
+    private Pose2d visionData = kNoPose;
+
+
     private void updatePose() {
         ICamera limelight = ICamera.getInstance();
 
-        if (limelight.hasTarget()) {
-
-            Pose2d pose = limelight.getPose2d();
-
-            Pose3d tagPose = Field.aprilTags[ (int) (limelight.getTagID() - 1)]; 
-
-            double dist = Math.hypot(
-                pose.getX() - tagPose.getX(), 
-                pose.getY() - tagPose.getY()
-            );
-
-            if (dist < Settings.Swerve.MAX_DIST) {
-                reset(limelight.getPose2d());
-            } else {
-                poseEstimator.addVisionMeasurement(limelight.getPose2d(), Timer.getFPGATimestamp() - limelight.getLatency());
-            }
+        if (limelight.hasRobotPose()) {
+            Pose2d pose = limelight.getRobotPose();
+            visionData = pose;
+            poseEstimator.addVisionMeasurement(pose, Timer.getFPGATimestamp() - limelight.getLatency());
+        } else {
+            visionData = kNoPose;
         }
         poseEstimator.update(getGyroAngle(), getModulePositions());
         odometry.update(getGyroAngle(), getModulePositions());
@@ -307,7 +260,9 @@ public class SwerveDrive extends SubsystemBase {
 
         updatePose();
 
-        field.setRobotPose(getPose());
+        field.getObject("odometry").setPose(getOdometryPose());
+        field.getObject("pose estimator").setPose(getPose());
+        cameraField.getObject("vision data").setPose(visionData);
 
         var pose = getPose();
         for (int i = 0; i < modules.length; ++i) {

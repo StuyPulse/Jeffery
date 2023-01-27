@@ -7,10 +7,12 @@ import com.stuypulse.stuylib.control.angle.feedback.AnglePIDController;
 import com.stuypulse.stuylib.control.feedback.PIDController;
 import com.stuypulse.stuylib.math.Angle;
 import com.stuypulse.stuylib.streams.angles.filters.AFilter;
+import com.stuypulse.stuylib.streams.angles.filters.AMotionProfile;
 import com.stuypulse.stuylib.streams.filters.MotionProfile;
 
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.kinematics.ChassisSpeeds;
+import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj2.command.CommandBase;
 
 import com.stuypulse.robot.constants.Settings.AlignmentCommand.*;
@@ -30,12 +32,12 @@ public class SwerveDriveToPoseMP extends CommandBase {
         this.swerve = swerve;
         this.targetPose = targetPose;
         
-        xPID = new PIDController(Translation.P, Translation.I, Translation.D)
-            .setSetpointFilter(new MotionProfile(2, 3));
-        yPID = new PIDController(Translation.P, Translation.I, Translation.D)
-            .setSetpointFilter(new MotionProfile(2, 3));
-        anglePID = new AnglePIDController(Rotation.P, Rotation.I, Rotation.D)
-            .setSetpointFilter(AFilter.create(x -> Angle.fromRadians(targetPose.getRotation().getRadians())));
+        xPID = new PIDController(Translation.P, Translation.I, Translation.D);
+            // .setSetpointFilter(new MotionProfile(3, 2));
+        yPID = new PIDController(Translation.P, Translation.I, Translation.D);
+            // .setSetpointFilter(new MotionProfile(3, 2));
+        anglePID = new AnglePIDController(Rotation.P, Rotation.I, Rotation.D);
+            // .setSetpointFilter(new AMotionProfile(5, 4));
     
         addRequirements(swerve);
     } 
@@ -50,6 +52,15 @@ public class SwerveDriveToPoseMP extends CommandBase {
             anglePID.update(Angle.fromRadians(targetPose.getRotation().getRadians()), Angle.fromRadians(currentPose.getRotation().getRadians()))
         );
         // log the angle
+        
+        final double epsilon = Units.inchesToMeters(4);
+        final double epsilonDegrees = 5;
+
+        if (xPID.isDone(epsilon)) chassisSpeeds.vxMetersPerSecond = 0;
+        if (yPID.isDone(epsilon)) chassisSpeeds.vyMetersPerSecond = 0;
+        if (anglePID.isDoneDegrees(epsilonDegrees))
+            chassisSpeeds.omegaRadiansPerSecond = 0;
+
         swerve.setStates(chassisSpeeds, true);
     }
 }

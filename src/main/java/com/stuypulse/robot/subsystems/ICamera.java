@@ -20,13 +20,11 @@ public abstract class ICamera extends SubsystemBase {
         return instance;
     }
 
+    public abstract boolean hasRobotPose();
+
+    public abstract Pose2d getRobotPose();
+
     public abstract double getLatency();
 
-    public abstract boolean hasTarget();
-
-    public abstract Pose3d getPose3d();
-
-    public abstract Pose2d getPose2d();
-
-    public abstract int getTagID();
+    // public abstract int getTagID();
 }
