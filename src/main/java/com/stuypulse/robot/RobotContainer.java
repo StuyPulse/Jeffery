@@ -7,6 +7,7 @@ package com.stuypulse.robot;
 
 import com.pathplanner.lib.PathPlannerTrajectory;
 import com.stuypulse.robot.commands.auton.DoNothingAuton;
+import com.stuypulse.robot.commands.auton.LongAuton;
 import com.stuypulse.robot.commands.auton.MobilityAuton;
 import com.stuypulse.robot.commands.auton.OnePiece;
 import com.stuypulse.robot.commands.auton.OnePieceDock;
@@ -138,6 +139,7 @@ public class RobotContainer {
         autonChooser.addOption("3 Piece + Dock", new ThreePieceDock(this));
         autonChooser.addOption("1 Piece", new OnePiece(this));
         autonChooser.addOption("3 Piece", new ThreePiece(this));
+        autonChooser.addOption("Long Auton", new LongAuton(this));
 
         SmartDashboard.putData("Autonomous", autonChooser);
     }

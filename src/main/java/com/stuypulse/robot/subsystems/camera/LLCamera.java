@@ -31,7 +31,7 @@ public class LLCamera extends ICamera {
 
 	public Angle getHorizontalOffset() {
 		if (!hasTarget()) {
-            System.out.println("Unable To Find Target! [getHorizontal() was called]");
+            // System.out.println("Unable To Find Target! [getHorizontal() was called]");
             return Angle.kZero;
         }
 		double txDegrees = limelight.getTargetXAngle();
@@ -43,7 +43,7 @@ public class LLCamera extends ICamera {
 
 	public Angle getVerticalOffset() {
 		if (!hasTarget()) {
-            System.out.println("Unable To Find Target! [getVerticalOffset() was called]");
+            // System.out.println("Unable To Find Target! [getVerticalOffset() was called]");
             return Angle.kZero;
         }
 		double tyDegrees = limelight.getTargetYAngle();
@@ -81,7 +81,7 @@ public class LLCamera extends ICamera {
 	@Override
 	public void periodic() {
 		if (!limelight.isConnected()) {
-			System.out.println("[WARNING] Limelight is disconnected.");
+			// System.out.println("[WARNING] Limelight is disconnected.");
 		}
 
 		SmartDashboard.putNumber("Camera/Distance", getDistance());

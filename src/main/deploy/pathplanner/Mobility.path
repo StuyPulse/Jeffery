@@ -10,7 +10,7 @@
         "x": 4.313588085093431,
         "y": 4.631360475274445
       },
-      "holonomicAngle": -179.5724274931666,
+      "holonomicAngle": -180.0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -24,15 +24,65 @@
     },
     {
       "anchorPoint": {
-        "x": 4.199233505457025,
-        "y": 5.935002683129475
+        "x": 8.051914643895477,
+        "y": 6.062082059127769
       },
       "prevControl": {
-        "x": 4.187798047493384,
-        "y": 5.100214251783711
+        "x": 6.602062439476442,
+        "y": 4.985703596841222
+      },
+      "nextControl": {
+        "x": 9.357118799806264,
+        "y": 7.031072993532846
+      },
+      "holonomicAngle": 180.0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": true,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 12.346607395471736,
+        "y": 6.209549979850285
+      },
+      "prevControl": {
+        "x": 11.176897759448732,
+        "y": 7.492096037699562
+      },
+      "nextControl": {
+        "x": 13.58211334750473,
+        "y": 4.85486054289153
+      },
+      "holonomicAngle": 0,
+      "isReversal": false,
+      "velOverride": null,
+      "isLocked": false,
+      "isStopPoint": false,
+      "stopEvent": {
+        "names": [],
+        "executionBehavior": "parallel",
+        "waitBehavior": "none",
+        "waitTime": 0
+      }
+    },
+    {
+      "anchorPoint": {
+        "x": 8.921341767054194,
+        "y": 2.149133582935135
+      },
+      "prevControl": {
+        "x": 11.412501947860886,
+        "y": 2.510461564963385
       },
       "nextControl": null,
-      "holonomicAngle": 179.21517539700812,
+      "holonomicAngle": 0,
       "isReversal": false,
       "velOverride": null,
       "isLocked": false,
@@ -45,5 +95,18 @@
       }
     }
   ],
-  "markers": []
+  "markers": [
+    {
+      "position": 0.5197665127840913,
+      "names": [
+        "long"
+      ]
+    },
+    {
+      "position": 1.8,
+      "names": [
+        "bob"
+      ]
+    }
+  ]
 }

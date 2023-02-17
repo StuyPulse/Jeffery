@@ -58,7 +58,7 @@ public class PVCamera extends ICamera {
     @Override
     public double getDistance() {
         if (!getResult().hasTargets()) {
-            System.out.printf("[WARNING]: getDistance() called with no targets");
+            // System.out.printf("[WARNING]: getDistance() called with no targets");
             return 0.0;
         }
         return PhotonUtils.calculateDistanceToTargetMeters(
@@ -71,7 +71,7 @@ public class PVCamera extends ICamera {
     @Override
     public Angle getHorizontalOffset() {
         if (!getResult().hasTargets()) {
-            System.out.printf("[WARNING]: getHorizontalOffset() called with no targets");
+            // System.out.printf("[WARNING]: getHorizontalOffset() called with no targets");
             return Angle.kZero;
         }
         return Angle.fromDegrees(getResult().getBestTarget().getYaw());
